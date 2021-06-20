@@ -24,17 +24,13 @@
 План работы:
 
 Полинов Тимур
- - Написать ликубейс скрипты и разместить из в папке sql, написать структуру Message, MessageEntity, getters & setters, toString
- - Save all messages PUT /storage/message/all
- - Delete message by id DELETE /storage/message?messageId={messageId}
+ - Написать ликубейс скрипты и разместить из в папке sql, написать структуру MessageInfo, getters & setters, toString
+ - Authorize user PUT /chat/user/authorize?userId={userId}
 
 Амелин Дмитрий
- - Get all messages between sender and receiver since timestamp GET /storage/message/allSinceTime?sender={sender}&receiver={receiver}&timestamp={timestamp}
- - Save message PUT /storage/message
+ - Logout user PUT /chat/user/logout?userId={userId}
 
 Дмитрий Демидов
- - Get message by id GET /storage/message?messageId={messageId}
- - Get all messages between sender and receiver GET /storage/message/all?sender={sender}&receiver={receiver}
 
 Критерии приемки:
 - методы сервиса должны быть протестированы.
