@@ -1,0 +1,10 @@
+server:
+  port: 7086
+
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    username: db_user
+    password: qwerty
+    url: jdbc:postgresql://84.201.167.2:5432/simple_db
