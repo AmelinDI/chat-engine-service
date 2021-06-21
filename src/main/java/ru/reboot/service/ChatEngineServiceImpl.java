@@ -47,9 +47,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         String receiver = message.getRecipient();
 
         message = addMessageToStorage(message);
-        if (!userCache.isOnline(receiver)) {
-            addMessageToRecentMessages(message);
-        }
+        addMessageToRecentMessages(message);
 
         return message;
     }
