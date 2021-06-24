@@ -98,6 +98,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public List<ChatInfo> getChatsInfo(String userId) {
+        System.out.println("getChatsInfo userId - "+userId);
         logger.info("Method .getChatsInfo userId={} ", userId);
         try {
             if (Objects.isNull(userId) || userId.isEmpty()) {
@@ -124,7 +125,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
-                logger.info("Method .getChatsInfo completed chats infos={}", result);
+                logger.info("Method .getChatsInfo completed chats result={}", result);
                 return result;
             }
         } catch (Exception e) {
