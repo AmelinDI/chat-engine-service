@@ -46,8 +46,9 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public List<MessageInfo> getMessages(String sender, String recipient, LocalDateTime lastSyncTime) {
-        return chatEngineService.getMessages(sender, recipient, lastSyncTime);
+    @GetMapping("/message/sinceTime?sender={sender}&recipient={recipient}&timestamp={timestamp}")
+    public List<MessageInfo> getMessages(@PathVariable String sender, @PathVariable String recipient, @PathVariable LocalDateTime timestamp) {
+        return chatEngineService.getMessages(sender, recipient, timestamp);
     }
 
     @Override
@@ -61,7 +62,8 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public List<ChatInfo> getChatsInfo(String userId) {
+    @GetMapping ("/all?userId={userId}")
+    public List<ChatInfo> getChatsInfo(@PathVariable String userId) {
         return chatEngineService.getChatsInfo(userId);
     }
 
