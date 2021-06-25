@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <preConditions>
+        <dbms type="postgresql"/>
+    </preConditions>
+    <changeSet id="0" author="polinov-ts">
+        <tagDatabase tag="v.1.2"/>
+    </changeSet>
+    <include file="22-06-21-recent_message-table.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

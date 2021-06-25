@@ -20,6 +20,7 @@ public class UserCache {
         allUsers.put(user.getUserId(), user);
     }
 
+
     public synchronized UserInfo getUser(String userId) {
 
         UserInfo user = allUsers.get(userId);
