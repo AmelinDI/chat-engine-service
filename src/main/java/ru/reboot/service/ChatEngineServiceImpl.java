@@ -104,7 +104,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public List<ChatInfo> getChatsInfo(String userId) {
-        System.out.println("getChatsInfo userId - " + userId);
         logger.info("Method .getChatsInfo userId={} ", userId);
         try {
             if (Objects.isNull(userId) || userId.isEmpty()) {
