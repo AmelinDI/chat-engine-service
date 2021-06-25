@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "message")
+@Table(name = "recent_message")
 public class MessageEntity {
 
     @Id

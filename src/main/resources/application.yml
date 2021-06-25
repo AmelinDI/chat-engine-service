@@ -10,5 +10,5 @@ spring:
     url: jdbc:postgresql://84.201.167.2:5432/simple_db
 
 client:
-  message-storage-service: http://84.201.167.2:7075
-  auth-service: http://84.201.167.2:7074
+  message-storage-service: http://84.201.167.2:7072
+  auth-service: http://84.201.167.2:7071
