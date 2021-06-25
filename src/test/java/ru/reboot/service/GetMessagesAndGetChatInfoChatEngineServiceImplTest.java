@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-public class getMessagesAndGetChatInfoChatEngineServiceImplTest {
+public class GetMessagesAndGetChatInfoChatEngineServiceImplTest {
 
     @InjectMocks
     private ChatEngineServiceImpl chatEngineService;
@@ -57,11 +57,11 @@ public class getMessagesAndGetChatInfoChatEngineServiceImplTest {
             testMessage.setSender("sender");
             testMessage.setContent("content" + i);
             testMessage.setRecipient("recipient");
-            testMessage.setLastAccessTime(LocalDateTime.now());
+            testMessage.setMessageTimestamp(LocalDateTime.now());
             messageEntities.add(testMessage);
         }
         when(messageRepository
-                .findAllBySenderAndRecipientAndLastAccessTimeAfter("sender", "recipient", LocalDateTime.of(2001, 3, 3, 1, 1)))
+                .findAllBySenderAndRecipientAndMessageTimestampAfter("sender", "recipient", LocalDateTime.of(2001, 3, 3, 1, 1)))
                 .thenReturn(messageEntities);
 
         List<MessageInfo> messageInfos = chatEngineService.getMessages("sender", "recipient", LocalDateTime.of(2001, 3, 3, 1, 1));
@@ -92,7 +92,6 @@ public class getMessagesAndGetChatInfoChatEngineServiceImplTest {
             testMessage.setContent("content" + i);
             testMessage.setRecipient("recipient");
             testMessage.setWasRead(false);
-            testMessage.setLastAccessTime(LocalDateTime.now());
             messageEntities.add(testMessage);
         }
         MessageEntity testMessage = new MessageEntity();
@@ -101,12 +100,28 @@ public class getMessagesAndGetChatInfoChatEngineServiceImplTest {
         testMessage.setContent("content");
         testMessage.setRecipient("recipient");
         testMessage.setWasRead(true);
-        testMessage.setLastAccessTime(LocalDateTime.now());
         messageEntities.add(testMessage);
+
+        List<MessageEntity> messageEntitiesFromSendr = new ArrayList<>();
+        MessageEntity messageEntityFromSender = new MessageEntity();
+        messageEntityFromSender.setSender("recipient");
+        messageEntityFromSender.setRecipient("re");
+        messageEntityFromSender.setWasRead(false);
+        messageEntitiesFromSendr.add(messageEntityFromSender);
+
+        messageEntities.stream().forEach(System.out::println);
+        System.out.println("-----------------------------------");
+        messageEntitiesFromSendr.forEach(System.out::println);
+
+        when(messageRepository
+                .findAllBySender("recipient"))
+                .thenReturn(messageEntitiesFromSendr);
+
         when(messageRepository
                 .findAllByRecipient("recipient"))
                 .thenReturn(messageEntities);
-        Assert.assertEquals(3, chatEngineService
+
+        Assert.assertEquals(4, chatEngineService
                 .getChatsInfo("recipient")
                 .stream()
                 .filter(a -> a.getUnreadMessagesCount() > 0)

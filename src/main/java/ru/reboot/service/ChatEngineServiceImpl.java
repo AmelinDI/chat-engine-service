@@ -73,7 +73,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 throw new BusinessLogicException("Parameters are null or empty", ErrorCode.ILLEGAL_ARGUMENT);
             } else {
                 List<MessageInfo> messageInfos = messageRepository
-                        .findAllBySenderAndRecipientAndLastAccessTimeAfter(sender, recipient, lastSyncTime)
+                        .findAllBySenderAndRecipientAndMessageTimestampAfter(sender, recipient, lastSyncTime)
                         .stream()
                         .map(ChatEngineServiceImpl::convertMessageEntityToMessageInfo)
                         .collect(Collectors.toList());
@@ -98,19 +98,20 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public List<ChatInfo> getChatsInfo(String userId) {
-        System.out.println("getChatsInfo userId - "+userId);
         logger.info("Method .getChatsInfo userId={} ", userId);
         try {
             if (Objects.isNull(userId) || userId.isEmpty()) {
                 throw new BusinessLogicException("User id is empty or null", ErrorCode.ILLEGAL_ARGUMENT);
             } else {
-                List<MessageInfo> messageInfos = messageRepository
+                List<MessageInfo> messageInfosToSender = messageRepository
                         .findAllByRecipient(userId)
                         .stream()
                         .map(ChatEngineServiceImpl::convertMessageEntityToMessageInfo)
                         .collect(Collectors.toList());
 
-                Set<String> senderId = messageInfos
+
+
+                Set<String> senderId = messageInfosToSender
                         .stream()
                         .map(MessageInfo::getSender)
                         .collect(Collectors.toSet());
@@ -119,12 +120,21 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                     ChatInfo chatInfo = new ChatInfo();
                     chatInfo.setCompanion(a);
 
-                    chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfos
+                    chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfosToSender
                             .stream()
                             .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.wasRead())
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
+
+                ChatInfo chatInfoFromSender = new ChatInfo();
+                chatInfoFromSender.setCompanion(userId);
+                chatInfoFromSender.setUnreadMessagesCount(
+                        Math.toIntExact(messageRepository
+                                .findAllBySender(userId)
+                                .stream()
+                                .filter(a -> !a.wasRead()).count()));
+                result.add(chatInfoFromSender);
                 logger.info("Method .getChatsInfo completed chats result={}", result);
                 return result;
             }

@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MessageRepository extends JpaRepository<MessageEntity, String> {
-    List<MessageEntity> findAllBySenderAndRecipientAndLastAccessTimeAfter(String sender, String recipient, LocalDateTime lastSyncTime);
+    List<MessageEntity> findAllBySenderAndRecipientAndMessageTimestampAfter(String sender, String recipient, LocalDateTime messageTime);
 
     List<MessageEntity> findAllByRecipient(String userId);
+
+    List<MessageEntity> findAllBySender(String userId);
 }
