@@ -10,6 +10,4 @@ public interface MessageRepository extends JpaRepository<MessageEntity, String> 
     List<MessageEntity> findAllBySenderAndRecipientAndMessageTimestampAfter(String sender, String recipient, LocalDateTime messageTime);
 
     List<MessageEntity> findAllByRecipient(String userId);
-
-    List<MessageEntity> findAllBySender(String userId);
 }
