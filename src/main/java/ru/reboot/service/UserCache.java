@@ -30,6 +30,16 @@ public class UserCache {
         return user;
     }
 
+    public synchronized List<String> getOfflineUserIds(){
+        Set<String> allUsersSet = new HashSet<>(allUsers.keySet());
+        allUsersSet.removeAll(onlineUsers);
+        return new ArrayList<>(allUsersSet);
+    }
+
+    public synchronized List<UserInfo> getAllUsers(){
+        return new ArrayList<>(allUsers.values());
+    }
+
     public synchronized void setOnlineFlag(String userId, boolean isOnline) {
 
         if (!allUsers.containsKey(userId)) {

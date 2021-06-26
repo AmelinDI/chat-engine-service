@@ -77,10 +77,6 @@ public class UserInfo {
         return roles;
     }
 
-    public void setRoles(String roles) {
-        this.roles = Arrays.asList(roles.split(","));
-    }
-
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
