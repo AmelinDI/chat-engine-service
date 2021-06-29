@@ -21,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class ChatEngineServiceImpl implements ChatEngineService {
@@ -56,7 +58,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @Override
     public void authorize(String userId) {
         try {
-            logger.info("Method .authorize userId={}.",userId);
+            logger.info("Method .authorize userId={}.", userId);
 
             if (Objects.isNull(userId) || userId.length() == 0) {
                 throw new BusinessLogicException("userID parameter of .authorize method is null or empty", ErrorCode.ILLEGAL_ARGUMENT);
@@ -66,20 +68,20 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
             RestTemplate restTemplate = new RestTemplate();
 
-            MessageInfo[] allUserMessages = restTemplate.getForObject(messageStorageServiceURL+"/storage/message/allByUser?userId={userId}",
+            MessageInfo[] allUserMessages = restTemplate.getForObject(messageStorageServiceURL + "/storage/message/allByUser?userId={userId}",
                     MessageInfo[].class, userId);
 
             if (allUserMessages == null) {
                 throw new BusinessLogicException("allUserMessages in .loadAllUsers gets null", ErrorCode.DATABASE_ERROR);
             }
 
-            for (MessageInfo messageInfo: allUserMessages) {
+            for (MessageInfo messageInfo : allUserMessages) {
                 MessageEntity messageEntity = convertMessageInfoToMessageEntity(messageInfo);
                 messageRepository.save(messageEntity);
             }
-            logger.info("Method .authorize completed userId={}.",userId);
+            logger.info("Method .authorize completed userId={}.", userId);
         } catch (Exception e) {
-            logger.error("Error to .authorize error={}.",userId);
+            logger.error("Error to .authorize error={}.", userId);
             throw e;
         }
     }
@@ -118,9 +120,38 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     }
 
+    /**
+     * Get messages form specific time up to current/
+     *
+     * @param sender       - sender user id
+     * @param recipient    - recipient user id
+     * @param lastSyncTime - last sync time
+     */
     @Override
     public List<MessageInfo> getMessages(String sender, String recipient, LocalDateTime lastSyncTime) {
-        return null;
+        logger.info("Method .getMessages sender={}, recipient={}, lastSyncTime={}.", sender, recipient, lastSyncTime);
+        try {
+            if (sender == null || sender.isEmpty() || recipient == null || recipient.isEmpty() || lastSyncTime == null) {
+                throw new BusinessLogicException("Parameters are null or empty", ErrorCode.ILLEGAL_ARGUMENT);
+            } else {
+                List<MessageInfo> messageInfos = messageRepository
+                        .findAllBySenderAndRecipientAndMessageTimestampAfter(sender, recipient, lastSyncTime)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList());
+
+                messageInfos.addAll(messageRepository
+                        .findAllBySenderAndRecipientAndMessageTimestampAfter(recipient, sender, lastSyncTime)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList()));
+                logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
+                return messageInfos;
+            }
+        } catch (Exception e) {
+            logger.error("Error to .getAllMessages error = {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
@@ -128,9 +159,44 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     }
 
+    /**
+     * Get operation information about user chats.
+     *
+     * @param userId - user id
+     */
     @Override
     public List<ChatInfo> getChatsInfo(String userId) {
-        return null;
+        logger.info("Method .getChatsInfo userId={} ", userId);
+        try {
+            if (Objects.isNull(userId) || userId.isEmpty()) {
+                throw new BusinessLogicException("User id is empty or null", ErrorCode.ILLEGAL_ARGUMENT);
+            } else {
+                List<MessageInfo> messageInfos = messageRepository
+                        .findAllByRecipient(userId)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList());
+                Set<String> senderId = messageInfos
+                        .stream()
+                        .map(MessageInfo::getSender)
+                        .collect(Collectors.toSet());
+                List<ChatInfo> result = senderId.stream().map(a -> {
+                    ChatInfo chatInfo = new ChatInfo();
+                    chatInfo.setCompanion(a);
+                    chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfos
+                            .stream()
+                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.wasRead())
+                            .count()));
+                    return chatInfo;
+                }).collect(Collectors.toList());
+                logger.info("Method .getChatsInfo completed chats result={}", result);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("Error to .getChatsInfo error={}", e.getMessage(), e);
+            throw e;
+
+        }
     }
 
     @Override
@@ -147,7 +213,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<MessageInfo> requestEntity = new HttpEntity<>(message);
-        HttpEntity<MessageInfo> result = restTemplate.exchange(messageStorageServiceURL+"/storage/message", HttpMethod.PUT, requestEntity, MessageInfo.class);
+        HttpEntity<MessageInfo> result = restTemplate.exchange(messageStorageServiceURL + "/storage/message", HttpMethod.PUT, requestEntity, MessageInfo.class);
         return result.getBody();
     }
 
@@ -159,13 +225,13 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     private void loadAllUsers() {
         RestTemplate restTemplate = new RestTemplate();
 
-        UserInfo[] authDBUsers = restTemplate.getForObject(authServiceURL+"/auth/user/all", UserInfo[].class);
+        UserInfo[] authDBUsers = restTemplate.getForObject(authServiceURL + "/auth/user/all", UserInfo[].class);
 
         if (authDBUsers == null) {
             throw new BusinessLogicException("authDBUsers in .loadAllUsers gets null", ErrorCode.DATABASE_ERROR);
         }
 
-        for (UserInfo userInfo: authDBUsers) {
+        for (UserInfo userInfo : authDBUsers) {
             userCache.addUser(userInfo);
         }
     }

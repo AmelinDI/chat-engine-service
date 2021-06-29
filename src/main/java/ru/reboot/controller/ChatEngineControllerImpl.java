@@ -3,6 +3,7 @@ package ru.reboot.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
@@ -47,8 +48,9 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public List<MessageInfo> getMessages(String sender, String recipient, LocalDateTime lastSyncTime) {
-        return chatEngineService.getMessages(sender, recipient, lastSyncTime);
+    @GetMapping("/message/sinceTime")
+    public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime timestamp) {
+        return chatEngineService.getMessages(sender, recipient, timestamp);
     }
 
     @Override
@@ -63,7 +65,8 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public List<ChatInfo> getChatsInfo(String userId) {
+    @GetMapping("/all")
+    public List<ChatInfo> getChatsInfo(@RequestParam String userId) {
         return chatEngineService.getChatsInfo(userId);
     }
 
