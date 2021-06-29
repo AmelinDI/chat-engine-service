@@ -1,16 +1,20 @@
 package ru.reboot.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.reboot.dao.MessageRepository;
 import ru.reboot.dao.entity.MessageEntity;
 import ru.reboot.dto.ChatInfo;
+import ru.reboot.dto.CommitMessageEvent;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
 import ru.reboot.error.BusinessLogicException;
@@ -33,6 +37,8 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     private static final Logger logger = LogManager.getLogger(ChatEngineServiceImpl.class);
 
+    private ObjectMapper mapper;
+    private KafkaTemplate<String, String> kafkaTemplate;
     private UserCache userCache;
     private MessageRepository messageRepository;
 
@@ -42,10 +48,19 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @Value("${client.message-storage-service}")
     private String messageStorageServiceURL;
 
-
     @Autowired
     public void setUserCache(UserCache userCache) {
         this.userCache = userCache;
+    }
+
+    @Autowired
+    public void setMapper(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    @Autowired
+    public void setKafkaTemplate(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Autowired
@@ -92,21 +107,21 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     /**
      * Logout of user
+     *
      * @param userId - user id.
      */
     @Transactional
     @Override
     public void logout(String userId) {
-        logger.info("Method .logout userId={}",userId);
-        try{
-            userCache.setOnlineFlag(userId,false);
-            long deletedMessages=0;
-            deletedMessages+=messageRepository.deleteBySenderAndRecipientIn(userId,userCache.getOfflineUserIds());
-            deletedMessages+=messageRepository.deleteBySenderInAndRecipient(userCache.getOfflineUserIds(),userId);
-            logger.info("Method .logout complete userId={}, number of deleted messages={}",userId,deletedMessages);
-        }
-        catch (Exception e){
-            logger.error("Method .getAllUsers error={}",e.getMessage(),e);
+        logger.info("Method .logout userId={}", userId);
+        try {
+            userCache.setOnlineFlag(userId, false);
+            long deletedMessages = 0;
+            deletedMessages += messageRepository.deleteBySenderAndRecipientIn(userId, userCache.getOfflineUserIds());
+            deletedMessages += messageRepository.deleteBySenderInAndRecipient(userCache.getOfflineUserIds(), userId);
+            logger.info("Method .logout complete userId={}, number of deleted messages={}", userId, deletedMessages);
+        } catch (Exception e) {
+            logger.error("Method .getAllUsers error={}", e.getMessage(), e);
             throw e;
         }
 
@@ -222,22 +237,22 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     /**
      * Get all users from chat-engince-service DB
+     *
      * @return Returns list of UserInfo instances
      */
     @Override
     public List<UserInfo> getAllUsers() {
         logger.info("Method .getAllUsers");
         List<UserInfo> allUsersList;
-        try{
+        try {
             allUsersList = userCache.getAllUsers();
-            if(allUsersList.size()==0){
+            if (allUsersList.size() == 0) {
                 throw new BusinessLogicException("No users found", ErrorCode.USER_NOT_FOUND);
             }
-            logger.info("Method .getAllUsers completed result={}",allUsersList);
+            logger.info("Method .getAllUsers completed result={}", allUsersList);
             return allUsersList;
-        }
-        catch (Exception e){
-            logger.error("Method .getAllUsers error={}",e.getMessage(),e);
+        } catch (Exception e) {
+            logger.error("Method .getAllUsers error={}", e.getMessage(), e);
             throw e;
         }
     }
@@ -255,6 +270,13 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         return result.getBody();
     }
 
+    @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
+    public void onCommitMessageEvent(String raw) {
+
+//        CommitMessageEvent event = mapper.readValue(raw, CommitMessageEvent.class);
+        logger.info("<< Received: {}", raw);
+    }
+
     /**
      * Initialisation UserCache with RestTemplate by "/auth/user/all" from  auth-service
      */
@@ -266,9 +288,8 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             loadAllUsers();
             logger.info("Method .loadAllUsers completed");
             logger.info("Method .init completed");
-        }
-        catch (Exception e){
-            logger.error("Method .init error={}",e.getMessage(),e);
+        } catch (Exception e) {
+            logger.error("Method .init error={}", e.getMessage(), e);
             throw e;
         }
 

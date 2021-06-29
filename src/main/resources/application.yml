@@ -11,8 +11,19 @@ spring:
   liquibase:
     change-log: classpath:liquibase/db.changelog.xml
     enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
+kafka:
+  autoStartup: false
 
 client:
   message-storage-service: http://84.201.167.2:7072
   auth-service: http://84.201.167.2:8071
+
