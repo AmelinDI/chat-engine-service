@@ -20,6 +20,7 @@ public class UserCache {
         allUsers.put(user.getUserId(), user);
     }
 
+
     public synchronized UserInfo getUser(String userId) {
 
         UserInfo user = allUsers.get(userId);
@@ -27,6 +28,16 @@ public class UserCache {
             throw new BusinessLogicException("User userId=" + userId + " not found", ErrorCode.USER_NOT_FOUND);
         }
         return user;
+    }
+
+    public synchronized List<String> getOfflineUserIds(){
+        Set<String> allUsersSet = new HashSet<>(allUsers.keySet());
+        allUsersSet.removeAll(onlineUsers);
+        return new ArrayList<>(allUsersSet);
+    }
+
+    public synchronized List<UserInfo> getAllUsers(){
+        return new ArrayList<>(allUsers.values());
     }
 
     public synchronized void setOnlineFlag(String userId, boolean isOnline) {

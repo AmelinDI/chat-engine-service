@@ -42,8 +42,9 @@ public class ChatEngineControllerImpl implements ChatEngineController {
         chatEngineService.authorize(userId);
     }
 
+    @PostMapping("user/logout")
     @Override
-    public void logout(String userId) {
+    public void logout(@RequestParam("userId") String userId) {
         chatEngineService.logout(userId);
     }
 
@@ -70,6 +71,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
         return chatEngineService.getChatsInfo(userId);
     }
 
+    @GetMapping("user/all")
     @Override
     public List<UserInfo> getAllUsers() {
         return chatEngineService.getAllUsers();

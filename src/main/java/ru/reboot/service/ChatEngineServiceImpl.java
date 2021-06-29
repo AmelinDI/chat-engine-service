@@ -17,15 +17,19 @@ import ru.reboot.error.BusinessLogicException;
 import ru.reboot.error.ErrorCode;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 public class ChatEngineServiceImpl implements ChatEngineService {
+
+    @Value("${client.auth-service}")
+    private String authServiceUrl;
 
     private static final Logger logger = LogManager.getLogger(ChatEngineServiceImpl.class);
 
@@ -86,8 +90,25 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         }
     }
 
+    /**
+     * Logout of user
+     * @param userId - user id.
+     */
+    @Transactional
     @Override
     public void logout(String userId) {
+        logger.info("Method .logout userId={}",userId);
+        try{
+            userCache.setOnlineFlag(userId,false);
+            long deletedMessages=0;
+            deletedMessages+=messageRepository.deleteBySenderAndRecipientIn(userId,userCache.getOfflineUserIds());
+            deletedMessages+=messageRepository.deleteBySenderInAndRecipient(userCache.getOfflineUserIds(),userId);
+            logger.info("Method .logout complete userId={}, number of deleted messages={}",userId,deletedMessages);
+        }
+        catch (Exception e){
+            logger.error("Method .getAllUsers error={}",e.getMessage(),e);
+            throw e;
+        }
 
     }
 
@@ -185,7 +206,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                     chatInfo.setCompanion(a);
                     chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfos
                             .stream()
-                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.wasRead())
+                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.getWasRead())
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
@@ -199,9 +220,26 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         }
     }
 
+    /**
+     * Get all users from chat-engince-service DB
+     * @return Returns list of UserInfo instances
+     */
     @Override
     public List<UserInfo> getAllUsers() {
-        return null;
+        logger.info("Method .getAllUsers");
+        List<UserInfo> allUsersList;
+        try{
+            allUsersList = userCache.getAllUsers();
+            if(allUsersList.size()==0){
+                throw new BusinessLogicException("No users found", ErrorCode.USER_NOT_FOUND);
+            }
+            logger.info("Method .getAllUsers completed result={}",allUsersList);
+            return allUsersList;
+        }
+        catch (Exception e){
+            logger.error("Method .getAllUsers error={}",e.getMessage(),e);
+            throw e;
+        }
     }
 
     private void addMessageToRecentMessages(MessageInfo message) {
@@ -217,9 +255,23 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         return result.getBody();
     }
 
+    /**
+     * Initialisation UserCache with RestTemplate by "/auth/user/all" from  auth-service
+     */
     @PostConstruct
     public void init() {
-        loadAllUsers();
+        logger.info("Method .init");
+        try {
+            logger.info("Method .loadAllUsers");
+            loadAllUsers();
+            logger.info("Method .loadAllUsers completed");
+            logger.info("Method .init completed");
+        }
+        catch (Exception e){
+            logger.error("Method .init error={}",e.getMessage(),e);
+            throw e;
+        }
+
     }
 
     private void loadAllUsers() {
@@ -263,7 +315,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 .setMessageTimestamp(info.getMessageTimestamp())
                 .setLastAccessTime(LocalDateTime.now()) // текущее время!!
                 .setReadTime(info.getReadTime())
-                .setWasRead(info.wasRead())
+                .setWasRead(info.getWasRead())
                 .build();
     }
 }

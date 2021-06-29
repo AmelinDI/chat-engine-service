@@ -8,6 +8,10 @@ spring:
     username: db_user
     password: qwerty
     url: jdbc:postgresql://84.201.167.2:5432/simple_db
+  liquibase:
+    change-log: classpath:liquibase/db.changelog.xml
+    enabled: false
+
 
 client:
   message-storage-service: http://84.201.167.2:7072
