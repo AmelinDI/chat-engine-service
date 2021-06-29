@@ -36,7 +36,8 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public void authorize(String userId) {
+    @PostMapping("/user/authorize")
+    public void authorize(@RequestParam String userId) {
         chatEngineService.authorize(userId);
     }
 
@@ -51,7 +52,8 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public MessageInfo send(MessageInfo message) {
+    @PostMapping("/message")
+    public MessageInfo send(@RequestBody MessageInfo message) {
         return chatEngineService.send(message);
     }
 

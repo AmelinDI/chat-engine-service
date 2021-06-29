@@ -11,4 +11,4 @@ spring:
 
 client:
   message-storage-service: http://84.201.167.2:7072
-  auth-service: http://84.201.167.2:7071
+  auth-service: http://84.201.167.2:8071
