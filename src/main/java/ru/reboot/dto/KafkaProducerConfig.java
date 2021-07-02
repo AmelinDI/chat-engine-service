@@ -34,9 +34,9 @@ public class KafkaProducerConfig {
         result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 kafkaServer);
         result.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
+                StringSerializer.class); // "${spring.kafka.producer.key-serializer}"
         result.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
+                StringSerializer.class); // "${spring.kafka.producer.value-serializer}"
         return result;
     }
 }

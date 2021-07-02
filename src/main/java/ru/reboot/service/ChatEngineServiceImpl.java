@@ -193,21 +193,17 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     }
 
 
-
-/*
-    @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
-    public void onCommitMessageEvent(String raw) {
-
-        CommitMessageEvent event = mapper.readValue(raw, CommitMessageEvent.class);
-        logger.info("<< Received: {}", raw);
-*/
-
+    /**
+     * Send message ids to Kafka
+     *
+     * @param messageIds - list of message ids
+     */
     @Override
     public void commitMessages(List<String> messageIds) {
         ListenableFuture<SendResult<String, String>> future;
 
-        for (int i = 0; i < messageIds.size(); i++) {
-            future = kafkaTemplate.send(CommitMessageEvent.TOPIC, String.valueOf(i), messageIds.get(i));
+        for (String msgId: messageIds) {
+            future = kafkaTemplate.send(CommitMessageEvent.TOPIC, msgId, msgId);
             future.addCallback(x -> logger.info(">> Message sent: {}", x),
                     y -> logger.error("Error sending message: ", y));
         }
