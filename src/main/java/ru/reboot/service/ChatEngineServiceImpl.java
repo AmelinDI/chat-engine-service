@@ -9,7 +9,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import ru.reboot.dao.MessageRepository;
 import ru.reboot.dao.entity.MessageEntity;
@@ -31,9 +36,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class ChatEngineServiceImpl implements ChatEngineService {
-
-    @Value("${client.auth-service}")
-    private String authServiceUrl;
 
     private static final Logger logger = LogManager.getLogger(ChatEngineServiceImpl.class);
 
@@ -190,9 +192,27 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         }
     }
 
+
+
+/*
+    @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
+    public void onCommitMessageEvent(String raw) {
+
+        CommitMessageEvent event = mapper.readValue(raw, CommitMessageEvent.class);
+        logger.info("<< Received: {}", raw);
+*/
+
     @Override
     public void commitMessages(List<String> messageIds) {
+        ListenableFuture<SendResult<String, String>> future;
 
+        for (int i = 0; i < messageIds.size(); i++) {
+            future = kafkaTemplate.send(CommitMessageEvent.TOPIC, String.valueOf(i), messageIds.get(i));
+            future.addCallback(x -> logger.info(">> Message sent: {}", x),
+                    y -> logger.error("Error sending message: ", y));
+        }
+
+        kafkaTemplate.flush();
     }
 
     /**
