@@ -6,8 +6,8 @@ spring:
     show-sql: true
   datasource:
     username: db_user
-    password: qwerty
-    url: jdbc:postgresql://84.201.167.2:5432/simple_db
+    password: qwerty159753
+    url: jdbc:postgresql://rc1b-ntnvoyyobhhfx8pe.mdb.yandexcloud.net:6432/simple_db
   liquibase:
     change-log: classpath:liquibase/db.changelog.xml
     enabled: false
