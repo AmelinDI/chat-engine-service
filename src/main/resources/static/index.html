@@ -78,10 +78,11 @@
         let data = {}
         data["name"] = $('#username').val();
         data["password"] = $('#password').val();
+        alert(JSON.stringify(data));
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "/?????????  -//endpoint for authorization
+            url: "http://localhost:7086/chat/authentication/login",
             data: JSON.stringify(data),
             dataType: 'json',
             cache: false,
@@ -92,7 +93,7 @@
             error: function (e) {
                 console.log("ERROR : ", e);
             }
-    });
+    });})
 </script>
 </body>
 </html>
