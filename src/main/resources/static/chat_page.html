@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Schat</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <style>
+        body{
+            font-family: "Arial", sans-serif;
+            font-size: 20px;
+            font-weight: normal;
+            max-width: 600px;
+            margin: 50px auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /*companion button style*/
+        .notification {
+            background-color: lawngreen;
+            color: #111111;
+            text-decoration: none;
+            padding: 15px 26px;
+            position: relative;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .notification:hover {
+            background: red;
+        }
+
+        .notification .badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            padding: 5px 10px;
+            border-radius: 50%;
+            background: red;
+            color: white;
+        }
+
+        .split {
+            height: 100%;
+            width: 50%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            overflow-x: scroll;
+            padding-top: 20px;
+        }
+
+        .left {
+            left: 0;
+            background-color: black;
+        }
+
+        .right {
+            right: 0;
+            background-color: lawngreen;
+        }
+
+        .centered {
+            position: absolute;
+            left: 30%;
+            vertical-align: center;
+        }
+
+        :root {
+            --send-bg: #0B93F6;
+            --send-color: white;
+            --receive-bg: #E5E5EA;
+            --receive-text: black;
+            --page-background: white;
+        }
+
+        p {
+            max-width: 255px;
+            word-wrap: break-word;
+            margin-bottom: 12px;
+            line-height: 24px;
+            position: relative;
+            padding: 10px 20px;
+            border-radius: 25px;
+
+        :before,
+        :after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            height: 25px;
+        }
+        }
+
+        .sender {
+            color: black;
+            background: #0B93F6;
+            margin-left: 100px;
+
+        :before {
+            right: -7px;
+            width: 20px;
+            background-color: var(--send-bg);
+            border-bottom-left-radius: 16px 14px;
+        }
+
+        :after {
+            right: -26px;
+            width: 26px;
+            background-color: var(--page-background);
+            border-bottom-left-radius: 10px;
+        }
+
+        }
+        .receiver {
+            color: black;
+            background: #E5E5EA;
+            margin-right: auto;
+
+        :before {
+            left: -7px;
+            width: 20px;
+            background-color: var(--receive-bg);
+            border-bottom-right-radius: 16px 14px;
+        }
+
+        :after {
+            left: -26px;
+            width: 26px;
+            background-color: var(--page-background);
+            border-bottom-right-radius: 10px;
+        }
+
+        }
+
+        #input-message-area {
+            color: #111111;
+        }
+
+        li {
+            list-style-type: none;
+        }
+        ul {
+            margin-left: 0;
+            padding-left: 0;
+        }
+        #input-message{
+            padding: 15px 26px;
+            position: relative;
+            display: inline-block;
+            border-radius: 5px;
+            border: brown 2px solid;
+        }
+        #send-message{
+            background-color: lawngreen;
+            color: black;
+            font-size: 20px;
+            margin-right: auto;
+        }
+        .companion-name-message{
+            position: absolute;
+            top: -12px;
+            right: 280px;
+            padding: 5px 10px;
+            border-radius: 20%;
+            background: black;
+            color: lawngreen;
+            font-size: 12px;
+        }
+        .header-right{
+            color: lawngreen;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div class="split left">
+    <div class="centered">
+        <h3 class="header-right">Добро пожаловать, Василий!</h3>
+        <h3 style="color: #f2f2f2">Your companions</h3>
+        <ul class="nobull">
+            <li><a id="message-companion" class="notification">
+                <span class="companion-name">Вася</span>
+                <span class="badge">3</span>
+            </a>
+            </li>
+        </ul>
+
+        <div id="input-message-area">
+            <textarea id="input-message" name="message-text" cols="40" rows="10"
+                      placeholder="input your message here"></textarea>
+            <br>
+            <button id="send-message" type="button">send message</button>
+        </div>
+    </div>
+</div>
+
+<div class="split right">
+    <div class="centered">
+        <p class="sender">Вопрос<span class="companion-name-message">me</span></p>
+        <p class="receiver">Ответ<span class="companion-name-message">Вася</span></p>
+        <p class="sender">Вопрос<span class="companion-name-message">me</span></p>
+        <p class="receiver">Ответ<span class="companion-name-message">Вася</span></p>
+        <p class="receiver">Много вопросов, много вопросов, много вопросов, много вопросов, много вопросов, много вопросов <span class="companion-name-message">Вася</span></p>
+        <p class="sender">Длинный ответище! Длинный ответище!Длинный ответище!Длинный ответище!Длинный ответище!Длинный ответище!Длинный ответище!Длинный ответище!<span class="companion-name-message">me</span></p>
+
+    </div>
+</div>
+
+
+<script>
+    $("button").click(function (e) {
+
+        $.ajax({
+            url: "http://localhost:8085/auth/user/3",
+            method: 'DELETE',
+            dataType: 'json',
+            success: function (result) {
+                alert('ok');
+            },
+            error: function (result) {
+                alert('error');
+            }
+        });
+    });
+
+    $("button").click(function (e) {
+
+        $.ajax({
+            url: "http://localhost:8085/auth/user/3",
+            method: 'DELETE',
+            dataType: 'json',
+            success: function (result) {
+                alert('ok');
+            },
+            error: function (result) {
+                alert('error');
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
