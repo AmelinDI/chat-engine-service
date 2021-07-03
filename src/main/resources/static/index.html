@@ -72,6 +72,7 @@
 
     </div>
 </div>
+<button id="gotochat" type="button"><a href="chat_page.html">Пропустить регистрацию</a></button>
 <script>
     $("button").click(function (e) {
         let data = {}
@@ -80,7 +81,7 @@
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "/?????????
+            url: "/?????????  -//endpoint for authorization
             data: JSON.stringify(data),
             dataType: 'json',
             cache: false,
