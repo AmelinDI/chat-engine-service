@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Schat</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 20px;
+            font-weight: normal;
+            max-width: 600px;
+            margin: 50px auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /*companion button style*/
+        .notification {
+            background-color: lawngreen;
+            color: #111111;
+            text-decoration: none;
+            padding: 15px 26px;
+            position: relative;
+            display: inline-block;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .notification:hover {
+            background: red;
+        }
+
+        .notification .badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            padding: 5px 10px;
+            border-radius: 50%;
+            background: red;
+            color: white;
+        }
+
+        .split {
+            height: 100%;
+            width: 50%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            overflow-x: scroll;
+            padding-top: 20px;
+        }
+
+        .left {
+            left: 0;
+            background-color: black;
+        }
+
+        .right {
+            right: 0;
+            background-color: lawngreen;
+        }
+
+        .centered {
+            position: absolute;
+            left: 30%;
+            vertical-align: center;
+        }
+
+        :root {
+            --send-bg: #0B93F6;
+            --send-color: white;
+            --receive-bg: #E5E5EA;
+            --receive-text: black;
+            --page-background: white;
+        }
+
+        p {
+            max-width: 255px;
+            word-wrap: break-word;
+            margin-bottom: 12px;
+            line-height: 24px;
+            position: relative;
+            padding: 10px 20px;
+            border-radius: 25px;
+
+        :before,
+        :after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            height: 25px;
+        }
+
+        }
+
+        .sender {
+            color: black;
+            background: #0B93F6;
+            margin-left: 100px;
+
+        :before {
+            right: -7px;
+            width: 20px;
+            background-color: var(--send-bg);
+            border-bottom-left-radius: 16px 14px;
+        }
+
+        :after {
+            right: -26px;
+            width: 26px;
+            background-color: var(--page-background);
+            border-bottom-left-radius: 10px;
+        }
+
+        }
+
+        .receiver {
+            color: black;
+            background: #E5E5EA;
+            margin-right: auto;
+
+        :before {
+            left: -7px;
+            width: 20px;
+            background-color: var(--receive-bg);
+            border-bottom-right-radius: 16px 14px;
+        }
+
+        :after {
+            left: -26px;
+            width: 26px;
+            background-color: var(--page-background);
+            border-bottom-right-radius: 10px;
+        }
+
+        }
+
+        #input-message-area {
+            color: #111111;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        ul {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        #input-message {
+            padding: 15px 26px;
+            position: relative;
+            display: inline-block;
+            border-radius: 5px;
+            border: brown 2px solid;
+        }
+
+        #send-message {
+            background-color: lawngreen;
+            color: black;
+            font-size: 20px;
+            margin-right: auto;
+        }
+
+        .companion-name-message {
+            position: absolute;
+            top: -12px;
+            right: 280px;
+            padding: 5px 10px;
+            border-radius: 20%;
+            background: black;
+            color: lawngreen;
+            font-size: 12px;
+        }
+
+        .header-right {
+            color: lawngreen;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div class="split left">
+    <div class="centered">
+        <h3 class="header-right">Добро пожаловать, Василий!</h3>
+        <h3 style="color: #f2f2f2">Your companions</h3>
+        <ul id="nobull">
+        </ul>
+        <div id="input-message-area">
+            <div id="currentCompanion"></div>
+            <textarea id="input-message" name="message-text" cols="40" rows="10"
+                      placeholder="input your message here"></textarea>
+            <br>
+            <button id="send-message" type="button" onclick="sendMessage()">send message</button>
+            <br>
+            <br>
+            <button type="button" onclick="resetMessage()">Reset companion</button>
+        </div>
+    </div>
+</div>
+
+<div class="split right">
+    <div id="messageBody" class="centered">
+
+    </div>
+</div>
+
+
+<script>
+    var userId = '';
+    var defaultAccessDate = '1970-01-01T00:00:01';
+    var lastAccessDateTime = '';
+    var currentCompanion = '';
+
+    getChatInfo()
+
+    function getChatInfo() {
+            $.ajax({
+                url: "http://localhost:7086/chat/current",
+                method: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    userId = result["userId"];
+                    $.ajax({
+                        url: "http://localhost:7086/chat/all?userId=" + userId,
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (result) {
+                            for (let i = 0; i < result.length; i++) {
+                                let createList = '';
+                                let newDiv = '';
+                                createList = document.createElement("li");
+                                currentCompanion = result[i].companion;
+                                createList.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + currentCompanion + "</span><span class='badge'>" + result[i].unreadMessagesCount + "</span></div><br>";
+                                $("#nobull").append(createList);
+                                createList.append(newDiv);
+                        }},
+                        error: function (result) {
+                            alert('error');
+                        }
+                    });
+                },
+                error:
+                    function (result) {
+                        alert('error');
+                    }
+            });
+    }
+
+    function sendMessage(){
+        alert("sendMessage");
+        let messageText = $("#input-message").val();
+        let data={};
+        data.sender=userId;
+        data.recipient=currentCompanion;
+        data.content= messageText;
+        data.messageTimestamp= new Date().toISOString();
+        data.lastAccessTime=new Date().toISOString();
+        data.wasRead=false
+        data.readTime=null
+        $.ajax({
+            url: "http://localhost:7086/chat/message",
+            type: 'POST',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function () {
+                $("#messageBody").append("<p class='sender'>" + messageText + "<span class='companion-name-message'>me</span></p>");
+            },
+            error: function (result) {
+            }
+        });
+    }
+
+    function clickOnCompanion (element) {
+        let sender = element.children[0].innerHTML;
+        currentCompanion = sender;
+        if($('#conpanionName').val()!=sender) {
+            document.getElementById("messageBody").innerHTML="";
+            $("#currentCompanion").empty();
+            $("#currentCompanion").append("<h5 style='color: red'>Type message to:</h5>");
+            $("#currentCompanion").append("<h3 id='conpanionName' style='color: lawngreen'><span id='recipientName'>" + sender + "</span></h3>");
+            firstLoad(sender);
+            lastAccessDateTime = new Date().toISOString();
+            setInterval(secondLoopLoad, 30000);
+        }else {
+
+        }
+    }
+
+    function firstLoad(sender){
+        $.ajax({
+            url: "http://localhost:7086/chat/message/sinceTime?sender=" + sender + "&recipient=" + userId + "&timestamp=" + defaultAccessDate,
+            method: 'GET',
+            dataType: 'json',
+            success: function (result) {
+                for (let i = 0; i < result.length; i++) {
+                    lastAccessDateTime = new Date().toISOString();
+                    if (result[i].sender == sender) {
+                        let messageSender = "<p class='sender'>" + result[i].content + "<span class='companion-name-message'>me</span></p>";
+                        $("#messageBody").append(messageSender);
+                    } else {
+                        let messageRecepient = "<p class='receiver'>" + result[i].content + "<span class='companion-name-message'>" + result[i].sender + "</span></p>";
+                        $("#messageBody").append(messageRecepient);
+                    }
+                }
+            },
+            error: function (result) {
+                alert("error");
+            }
+        });
+    }
+
+    function secondLoopLoad(){
+        $.ajax({
+            url: "http://localhost:7086/chat/message/sinceTime?sender=" + currentCompanion + "&recipient=" + userId + "&timestamp=" + lastAccessDateTime,
+            method: 'GET',
+            dataType: 'json',
+            success: function (result) {
+                lastAccessDateTime = new Date().toISOString();
+                for (let i = 0; i < result.length; i++) {
+                    if (result[i].sender == sender) {
+                        let messageSender = "<p class='sender'>" + result[i].content + "<span class='companion-name-message'>me</span></p>";
+                        $("#messageBody").append(messageSender);
+                    } else {
+                        let messageRecepient = "<p class='receiver'>" + result[i].content + "<span class='companion-name-message'>" + result[i].sender + "</span></p>";
+                        $("#messageBody").append(messageRecepient);
+                    }
+                }
+            },
+            error: function (result) {
+            }
+        });
+    }
+</script>
+</body>
+</html>

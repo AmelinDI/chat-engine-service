@@ -1,8 +1,98 @@
 <html>
 <header>
-</header>
+    <title>SChat_authorization</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <style>
+        .login-page {
+            width: 360px;
+            padding: 8% 0 0;
+            margin: auto;
+        }
 
+        .form {
+            position: relative;
+            background: black;
+            max-width: 300px;
+            margin: 0 auto 100px;
+            padding: 45px;
+            text-align: center;
+        }
+
+        .form input {
+            font-family: "Arial", sans-serif;
+            outline: 0;
+            background: #f2f2f2;
+            width: 100%;
+            border: 0;
+            margin: 0 0 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form button {
+            font-family: "Arial", sans-serif;
+            outline: 0;
+            background: #111111;
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: lawngreen;
+            font-size: 14px;
+        }
+
+        .form button:hover {
+            background: green;
+            color: white;
+            cursor: pointer
+        }
+
+        body {
+            background: black;
+        }
+    </style>
+</header>
 <body>
-<h1>Welcome to SChat!!!</h1>
+
+<div class="login-page">
+    <div class="form">
+        <h1 style="color: white">Authorization
+            <b style="color: lawngreen">Schat</b></h1>
+        <br>
+        <input type="text" id="username" placeholder="username"/>
+        <input type="password" id="password" placeholder="password"/>
+        <button id="login" type="button">Login</button>
+        <br>
+        <br>
+        <button id="registration" type="button">Registration</button>
+        </br>
+
+    </div>
+</div>
+<button id="gotochat" type="button"><a href="chat_page.html">Пропустить регистрацию</a></button>
+<script>
+    $("button").click(function (e) {
+        let data = {}
+        data["name"] = $('#username').val();
+        data["password"] = $('#password').val();
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "/?????????  -//endpoint for authorization
+            data: JSON.stringify(data),
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                alert(JSON.stringify(data));
+                location.href = 'static/chat_page.html';
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+            }
+    });
+</script>
 </body>
 </html>
