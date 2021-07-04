@@ -25,10 +25,10 @@ public class CustomUserDetailedService implements UserDetailsService {
 
         try {
             UserInfo userInfo = UserInfo.builder()
-                    .setUserID("xxx112")
+                    .setUserID("x1")
                     .setLogin("anton")
-                    .setPassword("qwerty")
-                    .setRoles(Collections.singletonList("USER"))
+                    .setPassword("antonpass")
+                    .setRoles(Collections.singletonList("ADMIN"))
                     .build();
 
             Collection<GrantedAuthority> authorities = userInfo.getRoles().stream()

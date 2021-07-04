@@ -9,7 +9,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import ru.reboot.dao.MessageRepository;
 import ru.reboot.dao.entity.MessageEntity;
@@ -31,9 +36,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class ChatEngineServiceImpl implements ChatEngineService {
-
-    @Value("${client.auth-service}")
-    private String authServiceUrl;
 
     private static final Logger logger = LogManager.getLogger(ChatEngineServiceImpl.class);
 
@@ -190,8 +192,26 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         }
     }
 
+
+    /**
+     * Send message ids to Kafka
+     *
+     * @param messageIds - list of message ids
+     */
     @Override
     public void commitMessages(List<String> messageIds) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        logger.info("Method .commitMessages userId={} ", messageIds.toString());
+        try {
+            CommitMessageEvent messageEvent = new CommitMessageEvent(messageIds);
+            kafkaTemplate.send(CommitMessageEvent.TOPIC, objectMapper.writeValueAsString(messageEvent));
+
+            logger.info(">> Sent: {}", objectMapper.writeValueAsString(messageEvent));
+        } catch (Exception e) {
+            logger.error("Error to .commitMessages error={}", e.getMessage(), e);
+            throw new BusinessLogicException(e.getMessage(), ErrorCode.ILLEGAL_ARGUMENT);
+        }
 
     }
 
