@@ -189,7 +189,7 @@
 
 <div class="split left">
     <div class="centered">
-        <h3 class="header-right">Добро пожаловать, Василий!</h3>
+        <h3 class="header-right"><span>Добро пожаловать, </span><span id="setnamehere"></span></h3>
         <h3 style="color: #f2f2f2">Your companions</h3>
         <ul id="nobull">
         </ul>
@@ -223,11 +223,14 @@
 
     function getChatInfo() {
             $.ajax({
-                url: "http://localhost:7086/chat/current",
+                url: "http://localhost:7086/chat/authentication/info",
                 method: 'GET',
                 dataType: 'json',
                 success: function (result) {
+                    console.log(result);
                     userId = result["userId"];
+                    $("#setnamehere").text(userId);
+                    console.log(userId);
                     $.ajax({
                         url: "http://localhost:7086/chat/all?userId=" + userId,
                         method: 'GET',
@@ -243,19 +246,18 @@
                                 createList.append(newDiv);
                         }},
                         error: function (result) {
-                            alert('error');
+                            console.log('error');
                         }
                     });
                 },
                 error:
                     function (result) {
-                        alert('error');
+                        console.log('error');
                     }
             });
     }
 
     function sendMessage(){
-        alert("sendMessage");
         let messageText = $("#input-message").val();
         let data={};
         data.sender=userId;
@@ -313,7 +315,7 @@
                 }
             },
             error: function (result) {
-                alert("error");
+                console.log("error");
             }
         });
     }

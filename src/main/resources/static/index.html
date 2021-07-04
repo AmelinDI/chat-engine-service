@@ -78,7 +78,6 @@
         let data = {}
         data["login"] = $('#login').val();
         data["password"] = $('#password').val();
-        alert(JSON.stringify(data));
         $.ajax({
             type: "POST",
             contentType: "application/json",
@@ -87,8 +86,8 @@
             dataType: 'json',
             cache: false,
             success: function(data){
-                alert(JSON.stringify(data));
-                location.href = 'static/chat_page.html';
+                console.log(data)
+                window.location.href = 'chat_page.html';
             },
             error: function (e) {
                 console.log("ERROR : ", e);

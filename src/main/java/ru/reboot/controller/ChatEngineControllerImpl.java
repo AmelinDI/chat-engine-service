@@ -52,8 +52,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
      * Authenticate user.
      */
     @PostMapping("authentication/login")
-    public void login(@RequestBody AuthenticationInfo authenticationInfo) {
-
+    public String login(@RequestBody AuthenticationInfo authenticationInfo) {
         String login = authenticationInfo.getLogin();
         String password = authenticationInfo.getPassword();
 
@@ -64,6 +63,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         logger.info("User login={} authenticated successfully", login);
+        return "{\"login\":\"compleate\"}";
     }
 
     /**
@@ -71,9 +71,10 @@ public class ChatEngineControllerImpl implements ChatEngineController {
      */
     @GetMapping("authentication/info")
     public UserInfo getUserInfo(Authentication authentication) {
-
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        return new UserInfo();
+        UserInfo user2 = new UserInfo();
+        user2.setUserId("Васятко");
+        return user2;
     }
 
     @Override
