@@ -103,7 +103,8 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     }
 
     @Override
-    public void commitMessages(List<String> messageIds) {
+    @PutMapping("/message/commit")
+    public void commitMessages(@RequestBody List<String> messageIds) {
         chatEngineService.commitMessages(messageIds);
     }
 
