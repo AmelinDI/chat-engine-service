@@ -2,13 +2,15 @@ package ru.reboot.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.reboot.dto.UserInfo;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class CustomUserDetailedService implements UserDetailsService {
 
@@ -29,11 +31,11 @@ public class CustomUserDetailedService implements UserDetailsService {
                     .setRoles(Collections.singletonList("USER"))
                     .build();
 
-            return User.builder()
-                    .username(userInfo.getLogin())
-                    .password(userInfo.getPassword())
-                    .roles(userInfo.getRoles().toArray(new String[0]))
-                    .build();
+            Collection<GrantedAuthority> authorities = userInfo.getRoles().stream()
+                    .map(role -> (GrantedAuthority) () -> "ROLE_" + role)
+                    .collect(Collectors.toList());
+
+            return new CustomUserDetails(userInfo.getUserId(), userInfo.getLogin(), userInfo.getPassword(), authorities);
         } catch (Exception ex) {
             logger.error("Failed to .loadUserByUsername login={}", login, ex);
             throw ex;

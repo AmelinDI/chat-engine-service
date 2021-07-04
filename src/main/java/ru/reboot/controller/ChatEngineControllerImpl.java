@@ -7,11 +7,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.reboot.dto.AuthenticationInfo;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
+import ru.reboot.security.CustomUserDetails;
 import ru.reboot.service.ChatEngineService;
 
 import java.time.LocalDateTime;
@@ -55,10 +57,23 @@ public class ChatEngineControllerImpl implements ChatEngineController {
         String login = authenticationInfo.getLogin();
         String password = authenticationInfo.getPassword();
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(login, password);
-        authenticationManager.authenticate(authentication);
+        Authentication token = new UsernamePasswordAuthenticationToken(login, password);
+        Authentication authentication = authenticationManager.authenticate(token);
 
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         logger.info("User login={} authenticated successfully", login);
+    }
+
+    /**
+     * Get user info.
+     */
+    @GetMapping("authentication/info")
+    public UserInfo getUserInfo(Authentication authentication) {
+
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        return new UserInfo();
     }
 
     @Override
