@@ -5,15 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import ru.reboot.dto.AuthenticationInfo;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
-import ru.reboot.security.CustomUserDetails;
 import ru.reboot.service.ChatEngineService;
 
 import java.time.LocalDateTime;
@@ -30,51 +25,16 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     private static final Logger logger = LogManager.getLogger(ChatEngineControllerImpl.class);
 
     private ChatEngineService chatEngineService;
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     public void setChatEngineService(ChatEngineService chatEngineService) {
         this.chatEngineService = chatEngineService;
     }
 
-    @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
     @GetMapping("info")
     public String info() {
         logger.info("method .info invoked");
         return "ChatEngineController " + new Date();
-    }
-
-    /**
-     * Authenticate user.
-     */
-    @PostMapping("authentication/login")
-    public String login(@RequestBody AuthenticationInfo authenticationInfo) {
-        String login = authenticationInfo.getLogin();
-        String password = authenticationInfo.getPassword();
-
-        Authentication token = new UsernamePasswordAuthenticationToken(login, password);
-        Authentication authentication = authenticationManager.authenticate(token);
-
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        logger.info("User login={} authenticated successfully", login);
-        return "{\"login\":\"compleate\"}";
-    }
-
-    /**
-     * Get user info.
-     */
-    @GetMapping("authentication/info")
-    public UserInfo getUserInfo(Authentication authentication) {
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        UserInfo user2 = new UserInfo();
-        user2.setUserId("dima");
-        return user2;
     }
 
     @Override
@@ -111,7 +71,6 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     @Override
     @GetMapping("/all")
     public List<ChatInfo> getChatsInfo(@RequestParam String userId) {
-        System.out.println(userId);
         return chatEngineService.getChatsInfo(userId);
     }
 
