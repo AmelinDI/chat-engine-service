@@ -200,15 +200,19 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public void commitMessages(List<String> messageIds) {
-        ListenableFuture<SendResult<String, String>> future;
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        for (String msgId: messageIds) {
-            future = kafkaTemplate.send(CommitMessageEvent.TOPIC, msgId, msgId);
-            future.addCallback(x -> logger.info(">> Message sent: {}", x),
-                    y -> logger.error("Error sending message: ", y));
+        logger.info("Method .commitMessages userId={} ", messageIds.toString());
+        try {
+            CommitMessageEvent messageEvent = new CommitMessageEvent(messageIds);
+            kafkaTemplate.send(CommitMessageEvent.TOPIC, objectMapper.writeValueAsString(messageEvent));
+
+            logger.info(">> Sent: {}", objectMapper.writeValueAsString(messageEvent));
+        } catch (Exception e) {
+            logger.error("Error to .commitMessages error={}", e.getMessage(), e);
+            throw new BusinessLogicException(e.getMessage(), ErrorCode.ILLEGAL_ARGUMENT);
         }
 
-        kafkaTemplate.flush();
     }
 
     /**
