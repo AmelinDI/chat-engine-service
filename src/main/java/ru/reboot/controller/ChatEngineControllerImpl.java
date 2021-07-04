@@ -36,6 +36,14 @@ public class ChatEngineControllerImpl implements ChatEngineController {
         return "ChatEngineController " + new Date();
     }
 
+    /**
+     * Authenticate user.
+     */
+    @PostMapping("authentication/login")
+    public void login() {
+        System.out.println("HI");
+    }
+
     @Override
     @PostMapping("/user/authorize")
     public void authorize(@RequestParam String userId) {
