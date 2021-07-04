@@ -4,10 +4,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import ru.reboot.dto.AuthenticationInfo;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
+import ru.reboot.security.CustomUserDetails;
 import ru.reboot.service.ChatEngineService;
 
 import java.time.LocalDateTime;
@@ -24,10 +30,16 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     private static final Logger logger = LogManager.getLogger(ChatEngineControllerImpl.class);
 
     private ChatEngineService chatEngineService;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     public void setChatEngineService(ChatEngineService chatEngineService) {
         this.chatEngineService = chatEngineService;
+    }
+
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("info")
@@ -40,8 +52,28 @@ public class ChatEngineControllerImpl implements ChatEngineController {
      * Authenticate user.
      */
     @PostMapping("authentication/login")
-    public void login() {
-        System.out.println("HI");
+    public void login(@RequestBody AuthenticationInfo authenticationInfo) {
+
+        String login = authenticationInfo.getLogin();
+        String password = authenticationInfo.getPassword();
+
+        Authentication token = new UsernamePasswordAuthenticationToken(login, password);
+        Authentication authentication = authenticationManager.authenticate(token);
+
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        logger.info("User login={} authenticated successfully", login);
+    }
+
+    /**
+     * Get user info.
+     */
+    @GetMapping("authentication/info")
+    public UserInfo getUserInfo(Authentication authentication) {
+
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        return new UserInfo();
     }
 
     @Override
