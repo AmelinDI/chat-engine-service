@@ -3,6 +3,7 @@ package ru.reboot.dto;
 public class ChatInfo {
 
     private String companion;
+    private String companionId;
     private int unreadMessagesCount;
 
     public String getCompanion() {
@@ -11,6 +12,14 @@ public class ChatInfo {
 
     public void setCompanion(String companion) {
         this.companion = companion;
+    }
+
+    public String getCompanionId() {
+        return companionId;
+    }
+
+    public void setCompanionId(String companionId) {
+        this.companionId = companionId;
     }
 
     public int getUnreadMessagesCount() {
