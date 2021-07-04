@@ -17,6 +17,10 @@ public class UserInfo {
     private String password;
     private List<String> roles;
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -81,7 +85,6 @@ public class UserInfo {
         this.roles = roles;
     }
 
-
     @Override
     public String toString() {
         return "User{" +
@@ -97,11 +100,8 @@ public class UserInfo {
     }
 
     public static class Builder {
-        private UserInfo obj;
 
-        public Builder() {
-            obj = new UserInfo();
-        }
+        private UserInfo obj = new UserInfo();
 
         public Builder setUserID(String userId) {
             obj.userId = userId;
@@ -135,16 +135,6 @@ public class UserInfo {
 
         public Builder setPassword(String password) {
             obj.password = password;
-            return this;
-        }
-
-        public Builder setRoles(String roles) {
-
-            if (Objects.isNull(roles) || roles.isEmpty()) {
-                obj.roles = new ArrayList<>();
-            } else {
-                obj.roles = Arrays.asList(roles.split(","));
-            }
             return this;
         }
 
