@@ -65,10 +65,12 @@
             <artifactId>spring-kafka</artifactId>
             <version>2.7.3</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.12.3</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>2.5.2</version>
         </dependency>
     </dependencies>
 
@@ -86,7 +88,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.5.1</version>
             </plugin>
             <plugin>
                 <groupId>org.liquibase</groupId>

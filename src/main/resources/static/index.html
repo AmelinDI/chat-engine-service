@@ -62,9 +62,9 @@
         <h1 style="color: white">Authorization
             <b style="color: lawngreen">Schat</b></h1>
         <br>
-        <input type="text" id="username" placeholder="username"/>
+        <input type="text" id="login" placeholder="login"/>
         <input type="password" id="password" placeholder="password"/>
-        <button id="login" type="button">Login</button>
+        <button id="login-button" type="button">Login</button>
         <br>
         <br>
         <button id="registration" type="button">Registration</button>
@@ -72,15 +72,17 @@
 
     </div>
 </div>
+<button id="gotochat" type="button"><a href="chat_page.html">Пропустить регистрацию</a></button>
 <script>
     $("button").click(function (e) {
         let data = {}
-        data["name"] = $('#username').val();
+        data["login"] = $('#login').val();
         data["password"] = $('#password').val();
+        alert(JSON.stringify(data));
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "/?????????
+            url: "http://localhost:7086/chat/authentication/login",
             data: JSON.stringify(data),
             dataType: 'json',
             cache: false,
@@ -91,7 +93,7 @@
             error: function (e) {
                 console.log("ERROR : ", e);
             }
-    });
+    });})
 </script>
 </body>
 </html>
