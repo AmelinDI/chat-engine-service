@@ -26,6 +26,5 @@ kafka:
 client:
   message-storage-service: http://localhost:7072
   auth-service: http://localhost:8071
-#  message-storage-service: http://84.201.167.2:7072
-#  auth-service: http://84.201.167.2:8071
+
 

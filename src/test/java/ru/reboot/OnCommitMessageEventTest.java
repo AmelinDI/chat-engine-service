@@ -11,7 +11,8 @@ import ru.reboot.dto.CommitMessageEvent;
 import ru.reboot.error.BusinessLogicException;
 import ru.reboot.error.ErrorCode;
 import ru.reboot.service.ChatEngineServiceImpl;
-import ru.reboot.service.UserCache;
+
+import java.util.HashSet;
 
 
 public class OnCommitMessageEventTest {

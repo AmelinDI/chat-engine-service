@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -293,8 +294,9 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     /**
      * Reading Set of messages read from Kafka
-     * @param raw - serialized CommitMessageEvent instance
+     * @param raw - serialized CommitMessageEvent instance with Collection of MessageIds
      */
+    @Transactional
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
     public void onCommitMessageEvent(String raw) throws JsonProcessingException {
         logger.info(" >> Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
@@ -304,7 +306,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             if(event.getMessageIds().isEmpty()){
                 throw new BusinessLogicException("No messagesId",ErrorCode.ILLEGAL_ARGUMENT);
             }
-            messageRepository.updateWasReadById(event.getMessageIds());
+            messageRepository.updateWasReadByIds(event.getMessageIds());
             logger.info(" Method .onCommitMessageEvent complete result object: {}", event);
             return;
         }
