@@ -1,5 +1,6 @@
 package ru.reboot.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -270,11 +271,29 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         return result.getBody();
     }
 
+    /**
+     * Reading Set of messages read from Kafka
+     * @param raw - serialized CommitMessageEvent instance
+     */
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
-    public void onCommitMessageEvent(String raw) {
+    public void onCommitMessageEvent(String raw) throws JsonProcessingException {
+        logger.info(" >> Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
+            if(event.getMessageIds().isEmpty()){
+                throw new BusinessLogicException("No messagesId",ErrorCode.ILLEGAL_ARGUMENT);
+            }
+            messageRepository.updateWasReadById(event.getMessageIds());
+            logger.info(" Method .onCommitMessageEvent complete result object: {}", event);
+            return;
+        }
+        catch (Exception e){
+            logger.error("Method .onCommitMessageEvent error={}", e.getMessage(), e);
+            throw e;
+        }
 
-//        CommitMessageEvent event = mapper.readValue(raw, CommitMessageEvent.class);
-        logger.info("<< Received: {}", raw);
+
     }
 
     /**
