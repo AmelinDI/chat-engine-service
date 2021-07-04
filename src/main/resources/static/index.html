@@ -62,9 +62,9 @@
         <h1 style="color: white">Authorization
             <b style="color: lawngreen">Schat</b></h1>
         <br>
-        <input type="text" id="username" placeholder="username"/>
+        <input type="text" id="login" placeholder="login"/>
         <input type="password" id="password" placeholder="password"/>
-        <button id="login" type="button">Login</button>
+        <button id="login-button" type="button">Login</button>
         <br>
         <br>
         <button id="registration" type="button">Registration</button>
@@ -76,7 +76,7 @@
 <script>
     $("button").click(function (e) {
         let data = {}
-        data["name"] = $('#username').val();
+        data["login"] = $('#login').val();
         data["password"] = $('#password').val();
         alert(JSON.stringify(data));
         $.ajax({
