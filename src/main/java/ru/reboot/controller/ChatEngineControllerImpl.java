@@ -73,7 +73,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     public UserInfo getUserInfo(Authentication authentication) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
         UserInfo user2 = new UserInfo();
-        user2.setUserId("Васятко");
+        user2.setUserId("dima");
         return user2;
     }
 
@@ -91,7 +91,8 @@ public class ChatEngineControllerImpl implements ChatEngineController {
 
     @Override
     @GetMapping("/message/sinceTime")
-    public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime timestamp) {
+    public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
+
         return chatEngineService.getMessages(sender, recipient, timestamp);
     }
 
@@ -109,6 +110,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     @Override
     @GetMapping("/all")
     public List<ChatInfo> getChatsInfo(@RequestParam String userId) {
+        System.out.println(userId);
         return chatEngineService.getChatsInfo(userId);
     }
 
