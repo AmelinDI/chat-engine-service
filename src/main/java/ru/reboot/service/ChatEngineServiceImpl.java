@@ -296,10 +296,9 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      * Reading Set of messages read from Kafka
      * @param raw - serialized CommitMessageEvent instance with Collection of MessageIds
      */
-    @Transactional
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
     public void onCommitMessageEvent(String raw) throws JsonProcessingException {
-        logger.info(" >> Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
+        logger.info(" << Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
         try{
             ObjectMapper objectMapper = new ObjectMapper();
             CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
