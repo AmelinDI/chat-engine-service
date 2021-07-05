@@ -1,5 +1,6 @@
 package ru.reboot.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,9 @@ import ru.reboot.security.CustomUserDetailedService;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Value("${client.auth-service}")
+    private String authServiceURL;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -23,7 +27,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/index.html").permitAll()
                 .antMatchers("/authentication/login").permitAll()
-                .antMatchers("/chat/message/commit").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -34,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
 
-        auth.userDetailsService(new CustomUserDetailedService());
+        auth.userDetailsService(new CustomUserDetailedService(authServiceURL));
     }
 
     @Bean

@@ -2,7 +2,6 @@ package ru.reboot.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,13 +12,16 @@ import ru.reboot.dto.UserInfo;
 import ru.reboot.error.BusinessLogicException;
 import ru.reboot.error.ErrorCode;
 
-import java.util.*;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class CustomUserDetailedService implements UserDetailsService {
 
-    @Value("${client.auth-service}")
-    private String authServiceURL;
+    private final String authServiceURL;
+
+    public CustomUserDetailedService(String authServiceURL) {
+        this.authServiceURL = authServiceURL;
+    }
 
     private static final Logger logger = LogManager.getLogger(CustomUserDetailedService.class);
 
@@ -29,7 +31,7 @@ public class CustomUserDetailedService implements UserDetailsService {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            UserInfo userInfo = restTemplate.getForObject("http://localhost:8071/auth/user/byLogin?login={login}", UserInfo.class, login);
+            UserInfo userInfo = restTemplate.getForObject(authServiceURL + "/auth/user/byLogin?login={login}", UserInfo.class, login);
 
             if ((userInfo != null) && userInfo.getLogin().equals(login)) {
 
