@@ -22,12 +22,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/index.html").permitAll()
-                .antMatchers("/chat/authentication/login").permitAll()
+                .antMatchers("/authentication/login").permitAll()
                 .antMatchers("/chat/message/commit").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/index.html");
+                .loginPage("/index.html")
+                .defaultSuccessUrl("/chat_page.html");
     }
 
     @Override
