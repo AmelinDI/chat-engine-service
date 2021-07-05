@@ -37,8 +37,6 @@ public class ChatAuthController {
         Authentication token = new UsernamePasswordAuthenticationToken(login, password);
         Authentication authentication = authenticationManager.authenticate(token);
 
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         logger.info("User login={} authenticated successfully", login);
         return "{\"login\":\"compleate\"}";

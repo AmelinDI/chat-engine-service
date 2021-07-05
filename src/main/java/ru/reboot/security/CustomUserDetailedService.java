@@ -36,7 +36,7 @@ public class CustomUserDetailedService implements UserDetailsService {
             if ((userInfo != null) && userInfo.getLogin().equals(login)) {
 
                 Collection<GrantedAuthority> authorities = userInfo.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority( "ROLE_" + role))
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                         .collect(Collectors.toList());
 
                 logger.info("Method .loadUserByUsername completed with login={} ", login);
@@ -47,7 +47,7 @@ public class CustomUserDetailedService implements UserDetailsService {
                         userInfo.getPassword(),
                         authorities);
             }
-            throw new BusinessLogicException("Error getting UserInfo in auth Service = " + authServiceURL,  ErrorCode.USER_NOT_FOUND);
+            throw new BusinessLogicException("Error getting UserInfo in auth Service = " + authServiceURL, ErrorCode.USER_NOT_FOUND);
 
         } catch (Exception ex) {
             logger.error("Failed to .loadUserByUsername login={}", login, ex);
