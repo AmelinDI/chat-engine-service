@@ -30,8 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/index.html")
-                .defaultSuccessUrl("/chat_page.html");
+                .loginPage("/index.html");
     }
 
     @Override
