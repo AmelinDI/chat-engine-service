@@ -235,7 +235,6 @@
     var allUsers = {};
     var chatInfoList = {};
     var currentCompanionId = ""
-    var mapOfMessage = new Map();
 
     drawChats();
 
@@ -287,7 +286,7 @@
                                                 if (chatInfoList[koy]!==undefined) {
                                                     createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[koy].unreadMessagesCount + "</span></div><br>"
                                                 } else {
-                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
+                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
                                                 }
                                                 $("#nobull").append(createListString);
                                             });
@@ -324,8 +323,8 @@
         data.sender=currenUser["curentuseruserId"];
         data.recipient=currentCompanionId;
         data.content= messageText;
-        data.messageTimestamp= new Date().toISOString();
-        data.lastAccessTime=new Date().toISOString();
+        data.messageTimestamp= getCurrentTime();
+        data.lastAccessTime= getCurrentTime();
         data.wasRead=false
         data.readTime=null
 
@@ -337,7 +336,7 @@
             contentType: 'application/json',
             success: function () {
                 $("#input-message").val('');
-                $("#messageBody").append("<p class='receiver'>" + messageText + "</p>");
+                $("#messageBody").append("<p class='receiver'>"+getCurrentTime()+ "  " + messageText + "</p>");
             },
             error: function (result) {
             }
@@ -454,9 +453,9 @@
                         let createListString = document.createElement("li")
                         createListString.style.margin = '15px'
                         if (chatInfoList[koy]!==undefined) {
-                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[koy].unreadMessagesCount + "</span></div><br>"
+                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[koy].unreadMessagesCount + "</span></div><br>"
                         } else {
-                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
+                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
                         }
                         $("#nobull").append(createListString);
                     });
@@ -471,21 +470,27 @@
     }
 
     function drawMap(list) {
-        console.log(list[0].messageTimestamp);
-        let sortList = list.sort((a, b) => b.messageTimestamp - a.messageTimestamp);
-
-        lastAccessDateTime = new Date().toISOString();
+        // let sortList = list.sort((a, b) => b.messageTimestamp - a.messageTimestamp);
+        let sortList = list.sort(function(a,b){
+            return new Date(a.messageTimestamp) - new Date(b.messageTimestamp);
+        });
+        console.log(list)
+        console.log(sortList);
+        lastAccessDateTime = getCurrentTime();
         for (let i = 0; i < sortList.length; i++) {
-            alert(sortList[i].sender);
-            alert(currentCompanionId);
             if (sortList[i].sender == currentCompanionId) {
-                let messageSender = "<p class='sender'>" + sortList[i].content + "</p>";
+                let messageSender = "<p class='sender'>"+sortList[i].messageTimestamp+" " + sortList[i].content + "</p>";
                 $("#messageBody").append(messageSender);
-            } else {
-                let messageRecepient = "<p class='receiver'>" + sortList[i].content + "</p>";
+            } else{
+                let messageRecepient = "<p class='receiver'>"+sortList[i].messageTimestamp+ " " + sortList[i].content + "</p>";
                 $("#messageBody").append(messageRecepient);
             }
         }
+    }
+
+    function getCurrentTime () {
+        let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+        return (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
     }
 </script>
 </body>
