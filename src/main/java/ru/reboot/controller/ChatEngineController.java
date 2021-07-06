@@ -29,6 +29,14 @@ public interface ChatEngineController {
      *
      * @param sender       - sender user id
      * @param recipient    - recipient user id
+     */
+    List<MessageInfo> getMessages(String sender, String recipient);
+
+    /**
+     * Get messages form specific time up to current/
+     *
+     * @param sender       - sender user id
+     * @param recipient    - recipient user id
      * @param lastSyncTime - last sync time
      */
     List<MessageInfo> getMessages(String sender, String recipient, LocalDateTime lastSyncTime);

@@ -15,6 +15,8 @@ public interface MessageRepository extends JpaRepository<MessageEntity, String> 
 
     List<MessageEntity> findAllBySenderAndRecipientAndMessageTimestampAfter(String sender, String recipient, LocalDateTime messageTime);
 
+    List<MessageEntity> findAllBySenderAndRecipient(String sender, String recipient);
+
     List<MessageEntity> findAllByRecipient(String userId);
 
     long deleteBySenderAndRecipientIn(String sender, List<String> recipients);

@@ -134,7 +134,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @Override
     public MessageInfo send(MessageInfo message) {
         try {
-            logger.info("Method .sent message={}.", message);
+            logger.info("Method .send message={}.", message);
 
             if (Objects.isNull(message)) {
                 throw new BusinessLogicException("Message parameter of .send method is null", ErrorCode.ILLEGAL_ARGUMENT);
@@ -151,8 +151,41 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             logger.error("Error to .send(MessageInfo message) error = {}", e.getMessage(), e);
             throw e;
         }
-
     }
+
+
+    /**
+     * Get messages form specific time up to current/
+     *
+     * @param sender    - sender user id
+     * @param recipient - recipient user id
+     */
+    public List<MessageInfo> getMessages(String sender, String recipient) {
+        logger.info("Method .getMessages sender={}, recipient={}.", sender, recipient);
+        try {
+            if (sender == null || sender.isEmpty() || recipient == null || recipient.isEmpty()) {
+                throw new BusinessLogicException("Parameters are null or empty", ErrorCode.ILLEGAL_ARGUMENT);
+            } else {
+                List<MessageInfo> messageInfos = messageRepository
+                        .findAllBySenderAndRecipient(sender, recipient)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList());
+
+                messageInfos.addAll(messageRepository
+                        .findAllBySenderAndRecipient(recipient, sender)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList()));
+                logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
+                return messageInfos;
+            }
+        } catch (Exception e) {
+            logger.error("Error to .getAllMessages error = {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
 
     /**
      * Get messages form specific time up to current/
@@ -180,15 +213,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                         .map(this::convertMessageEntityToMessageInfo)
                         .collect(Collectors.toList()));
                 logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
-
-                messageInfos = messageInfos.stream().map(message -> {
-                    if (message.getWasRead()) {
-                    } else {
-                        message.setReadTime(LocalDateTime.now());
-                        message.setWasRead(true);
-                    }
-                    return message;
-                }).collect(Collectors.toList());
                 return messageInfos;
             }
         } catch (Exception e) {
@@ -312,7 +336,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             }
             messageRepository.updateWasReadByIds(event.getMessageIds());
             logger.info(" Method .onCommitMessageEvent complete result object: {}", event);
-            return;
         } catch (Exception e) {
             logger.error("Method .onCommitMessageEvent error={}", e.getMessage(), e);
             throw e;
