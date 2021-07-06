@@ -6,7 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import ru.reboot.dto.AuthenticationInfo;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
@@ -41,8 +46,9 @@ public class ChatEngineControllerImpl implements ChatEngineController {
 
     @Override
     @PostMapping("user/authorize")
-    public void authorize(@RequestParam String userId) {
+    public String authorize(@RequestBody String userId) {
         chatEngineService.authorize(userId);
+        return "{\"authorize\":\"complete\"}";
     }
 
     @PostMapping("user/logout")
@@ -65,7 +71,9 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     @Override
     @GetMapping("message/sinceTime")
     public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
-
+        System.out.println("sender - "+sender);
+        System.out.println("recipient - "+recipient);
+        System.out.println("timestamp - "+timestamp);
         return chatEngineService.getMessages(sender, recipient, timestamp);
     }
 

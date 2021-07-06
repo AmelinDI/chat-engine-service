@@ -14,7 +14,7 @@ public interface ChatEngineController {
      *
      * @param userId - user id
      */
-    void authorize(String userId);
+    String authorize(String userId);
 
     /**
      * Logout
