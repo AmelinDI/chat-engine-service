@@ -62,26 +62,37 @@
         <h1 style="color: white">Authorization
             <b style="color: mediumseagreen">Schat</b></h1>
         <br>
+        <input type="text" id="firstName" placeholder="firstName"/>
+        <input type="text" id="lastName" placeholder="lastName"/>
+        <input type="text" id="secondName" placeholder="secondName"/>
+        <input type="datetime-local" id="birthDate" placeholder="birthDate"/>
         <input type="text" id="login" placeholder="login"/>
         <input type="password" id="password" placeholder="password"/>
-        <button onkeypress="login()" onclick="login()" id="login-button" type="submit">Login</button>
+        <input type="text" id="roles" placeholder="roles"/>
+        <button onkeypress="login()" onclick="register()" id="login-button" type="submit">Red</button>
         <br>
         <br>
-        <button id="registration" type="button" onclick="registration()">Registration</button>
+        <a href="registration_page.html"><button id="registration" type="button">Register</button></a>
         </br>
 
     </div>
 </div>
 <script>
-    function login() {
+    function register() {
         let data = {}
+        data["firstName"] = $('#firstName').val()
+        data["lastName"] = $('#lastName').val();
+        data["secondName"] = $('#secondName').val();
+        data["birthDate"] = $('#birthDate').val();
         data["login"] = $('#login').val();
-        data["password"] = $('#password').val();
+        data["password"] = $('#password').val()
+        data["roles"] = $('#roles').val();
+
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "http://localhost:7086/authentication/login",
-            data: JSON.stringify(data),
+            url: "http://localhost:7086/authentication/registr",
+            data: data,
             dataType: 'json',
             cache: false,
             success: function(data){

@@ -55,18 +55,16 @@ public class ChatEngineControllerImpl implements ChatEngineController {
         return "{\"authorize\":\"complete\"}";
     }
 
-    @PostMapping("user/logout")
     @Override
-    public void logout(@RequestParam("userId") String userId) {
+    @PostMapping("user/logout")
+    public String logout(@RequestBody String userId) {
         chatEngineService.logout(userId);
+        return "{\"logout\":\"complete\"}";
     }
 
     @Override
     @GetMapping("/message/sinceTime")
     public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
-        System.out.println("sender - "+sender);
-        System.out.println("recipient - "+recipient);
-        System.out.println("timestamp - "+timestamp);
         return chatEngineService.getMessages(sender, recipient, timestamp);
     }
 

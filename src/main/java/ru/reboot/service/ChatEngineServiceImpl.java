@@ -180,15 +180,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                         .map(this::convertMessageEntityToMessageInfo)
                         .collect(Collectors.toList()));
                 logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
-
-                messageInfos = messageInfos.stream().map(message -> {
-                    if (message.getWasRead()) {
-                    } else {
-                        message.setReadTime(LocalDateTime.now());
-                        message.setWasRead(true);
-                    }
-                    return message;
-                }).collect(Collectors.toList());
                 return messageInfos;
             }
         } catch (Exception e) {

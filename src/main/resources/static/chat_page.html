@@ -353,8 +353,8 @@
             document.getElementById("messageBody").innerHTML="";
             $("#currentCompanion").empty();
             $("#input-message").val('');
-            $("#currentCompanion").append("<h5 style='color: red'>Type message to:</h5>");
-            $("#currentCompanion").append("<h3 id='conpanionName' style='color: lawngreen'><span id='recipientName'>" + sender + "</span></h3>");
+            $("#currentCompanion").append("<h3 style='color: red'>Type message to: " + sender + "</span></h3>");
+            // $("#currentCompanion").append("<h3 id='conpanionName' style='color: lawngreen'><span id='recipientName'>" + sender + "</span></h3>");
             firstLoad();
             lastAccessDateTime = new Date().toISOString();
             setInterval(secondLoopLoad, 30000);
@@ -418,12 +418,11 @@
 
     function logout(){
         let data = {};
-        data["userId"] = $('#setnamehere').val();
         $.ajax({
             url: "http://localhost:7086/chat/user/logout",
             contentType: "application/json",
             method: 'POST',
-            data: JSON.stringify(data),
+            data: currenUser["curentuseruserId"],
             dataType: 'json',
             success: function (result) {
                 window.location.href = 'index.html';
@@ -470,7 +469,6 @@
     }
 
     function drawMap(list) {
-        // let sortList = list.sort((a, b) => b.messageTimestamp - a.messageTimestamp);
         let sortList = list.sort(function(a,b){
             return new Date(a.messageTimestamp) - new Date(b.messageTimestamp);
         });
