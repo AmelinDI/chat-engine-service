@@ -31,7 +31,7 @@ public class UserCache {
     }
 
     public synchronized List<String> getOfflineUserIds(){
-        Set<String> allUsersSet = new HashSet<>(allUsers. keySet());
+        Set<String> allUsersSet = new HashSet<>(allUsers.keySet());
         allUsersSet.removeAll(onlineUsers);
         return new ArrayList<>(allUsersSet);
     }
