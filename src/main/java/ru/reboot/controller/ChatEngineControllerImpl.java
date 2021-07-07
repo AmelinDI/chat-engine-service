@@ -49,7 +49,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
 
     @PostMapping("user/logout")
     @Override
-    public String logout(@RequestParam("userId") String userId) {
+    public String logout(@RequestBody String userId) {
         SecurityContextHolder.getContext().setAuthentication(null);
         chatEngineService.logout(userId);
         return "{\"logout\":\"completed\"}";
@@ -79,7 +79,7 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     @Override
     @GetMapping("message/sinceTime")
     public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
-        List<MessageInfo> messageInfos = chatEngineService.getMessages(sender, recipient);
+        List<MessageInfo> messageInfos = chatEngineService.getMessages(sender, recipient, timestamp);
         List<String> messageIds = messageInfos.stream()
                 .filter(msg -> msg.getRecipient().equals(recipient))
                 .map(MessageInfo::getId)
@@ -103,7 +103,9 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     @Override
     @GetMapping("all")
     public List<ChatInfo> getChatsInfo(@RequestParam String userId) {
-        return chatEngineService.getChatsInfo(userId);
+        List<ChatInfo> tmpList = chatEngineService.getChatsInfo(userId);
+        tmpList.forEach(System.out::println);
+        return tmpList;
     }
 
     @Override

@@ -280,7 +280,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         } catch (Exception e) {
             logger.error("Error to .getChatsInfo error={}", e.getMessage(), e);
             throw e;
-
         }
     }
 
@@ -340,8 +339,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             logger.error("Method .onCommitMessageEvent error={}", e.getMessage(), e);
             throw e;
         }
-
-
     }
 
     /**
@@ -359,7 +356,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             logger.error("Method .init error={}", e.getMessage(), e);
             throw e;
         }
-
     }
 
     private void loadAllUsers() {
