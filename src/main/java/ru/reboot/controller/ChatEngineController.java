@@ -20,8 +20,17 @@ public interface ChatEngineController {
      * Logout
      *
      * @param userId - user id.
+     * @return - logout result
      */
     String logout(String userId);
+
+    /**
+     * Get messages form specific time up to current/
+     *
+     * @param sender       - sender user id
+     * @param recipient    - recipient user id
+     */
+    List<MessageInfo> getMessages(String sender, String recipient);
 
     /**
      * Get messages form specific time up to current/
