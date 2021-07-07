@@ -270,7 +270,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                     chatInfo.setCompanionId(a);
                     chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfos
                             .stream()
-                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.getWasRead())
+                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.wasRead())
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
@@ -403,7 +403,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 .setMessageTimestamp(info.getMessageTimestamp())
                 .setLastAccessTime(LocalDateTime.now()) // текущее время!!
                 .setReadTime(info.getReadTime())
-                .setWasRead(info.getWasRead())
+                .setWasRead(info.wasRead())
                 .build();
     }
 }

@@ -16,6 +16,7 @@ import ru.reboot.service.ChatEngineService;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Chat engine controller.
@@ -66,17 +67,25 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     @Override
     @GetMapping("message/all")
     public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient) {
-
-        return chatEngineService.getMessages(sender, recipient);
+        List<MessageInfo> messageInfos = chatEngineService.getMessages(sender, recipient);
+        List<String> messageIds = messageInfos.stream()
+                .filter(msg -> msg.getRecipient().equals(recipient))
+                .map(MessageInfo::getId)
+                .collect(Collectors.toList());
+        chatEngineService.commitMessages(messageIds);
+        return messageInfos;
     }
 
     @Override
     @GetMapping("message/sinceTime")
     public List<MessageInfo> getMessages(@RequestParam String sender, @RequestParam String recipient, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
-        System.out.println("sender - "+sender);
-        System.out.println("recipient - "+recipient);
-        System.out.println("timestamp - "+timestamp);
-        return chatEngineService.getMessages(sender, recipient, timestamp);
+        List<MessageInfo> messageInfos = chatEngineService.getMessages(sender, recipient);
+        List<String> messageIds = messageInfos.stream()
+                .filter(msg -> msg.getRecipient().equals(recipient))
+                .map(MessageInfo::getId)
+                .collect(Collectors.toList());
+        chatEngineService.commitMessages(messageIds);
+        return messageInfos;
     }
 
     @Override
