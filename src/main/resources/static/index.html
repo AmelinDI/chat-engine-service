@@ -60,40 +60,38 @@
 <div class="login-page">
     <div class="form">
         <h1 style="color: white">Authorization
-            <b style="color: lawngreen">Schat</b></h1>
+            <b style="color: mediumseagreen">Schat</b></h1>
         <br>
         <input type="text" id="login" placeholder="login"/>
         <input type="password" id="password" placeholder="password"/>
-        <button id="login-button" type="button">Login</button>
+        <button onkeypress="login()" onclick="login()" id="login-button" type="submit">Login</button>
         <br>
         <br>
-        <button id="registration" type="button">Registration</button>
+        <button id="registration" type="button" onclick="registration()">Registration</button>
         </br>
 
     </div>
 </div>
-<button id="gotochat" type="button"><a href="chat_page.html">Пропустить регистрацию</a></button>
 <script>
-    $("button").click(function (e) {
+    function login() {
         let data = {}
         data["login"] = $('#login').val();
         data["password"] = $('#password').val();
-        alert(JSON.stringify(data));
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "http://localhost:7086/chat/authentication/login",
+            url: "http://localhost:7086/authentication/login",
             data: JSON.stringify(data),
             dataType: 'json',
             cache: false,
             success: function(data){
-                alert(JSON.stringify(data));
-                location.href = 'static/chat_page.html';
+                console.log(data)
+                window.location.href = 'chat_page.html';
             },
             error: function (e) {
                 console.log("ERROR : ", e);
             }
-    });})
+    });}
 </script>
 </body>
 </html>

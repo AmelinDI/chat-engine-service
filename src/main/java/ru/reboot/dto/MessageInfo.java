@@ -62,7 +62,7 @@ public class MessageInfo {
         this.lastAccessTime = lastAccessTime;
     }
 
-    public boolean getWasRead() {
+    public boolean wasRead() {
         return wasRead;
     }
 
