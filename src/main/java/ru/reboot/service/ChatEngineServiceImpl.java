@@ -6,17 +6,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import ru.reboot.dao.MessageRepository;
 import ru.reboot.dao.entity.MessageEntity;
@@ -140,7 +134,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @Override
     public MessageInfo send(MessageInfo message) {
         try {
-            logger.info("Method .sent message={}.", message);
+            logger.info("Method .send message={}.", message);
 
             if (Objects.isNull(message)) {
                 throw new BusinessLogicException("Message parameter of .send method is null", ErrorCode.ILLEGAL_ARGUMENT);
@@ -157,8 +151,41 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             logger.error("Error to .send(MessageInfo message) error = {}", e.getMessage(), e);
             throw e;
         }
-
     }
+
+
+    /**
+     * Get messages form specific time up to current/
+     *
+     * @param sender    - sender user id
+     * @param recipient - recipient user id
+     */
+    public List<MessageInfo> getMessages(String sender, String recipient) {
+        logger.info("Method .getMessages sender={}, recipient={}.", sender, recipient);
+        try {
+            if (sender == null || sender.isEmpty() || recipient == null || recipient.isEmpty()) {
+                throw new BusinessLogicException("Parameters are null or empty", ErrorCode.ILLEGAL_ARGUMENT);
+            } else {
+                List<MessageInfo> messageInfos = messageRepository
+                        .findAllBySenderAndRecipient(sender, recipient)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList());
+
+                messageInfos.addAll(messageRepository
+                        .findAllBySenderAndRecipient(recipient, sender)
+                        .stream()
+                        .map(this::convertMessageEntityToMessageInfo)
+                        .collect(Collectors.toList()));
+                logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
+                return messageInfos;
+            }
+        } catch (Exception e) {
+            logger.error("Error to .getAllMessages error = {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
 
     /**
      * Get messages form specific time up to current/
@@ -240,10 +267,10 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                         .collect(Collectors.toSet());
                 List<ChatInfo> result = senderId.stream().map(a -> {
                     ChatInfo chatInfo = new ChatInfo();
-                    chatInfo.setCompanion(a);
+                    chatInfo.setCompanionId(a);
                     chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfos
                             .stream()
-                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.getWasRead())
+                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.wasRead())
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
@@ -294,23 +321,22 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     /**
      * Reading Set of messages read from Kafka
+     *
      * @param raw - serialized CommitMessageEvent instance with Collection of MessageIds
      */
     @Transactional
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
     public void onCommitMessageEvent(String raw) throws JsonProcessingException {
         logger.info(" >> Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
-        try{
+        try {
             ObjectMapper objectMapper = new ObjectMapper();
             CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
-            if(event.getMessageIds().isEmpty()){
-                throw new BusinessLogicException("No messagesId",ErrorCode.ILLEGAL_ARGUMENT);
+            if (event.getMessageIds().isEmpty()) {
+                throw new BusinessLogicException("No messagesId", ErrorCode.ILLEGAL_ARGUMENT);
             }
             messageRepository.updateWasReadByIds(event.getMessageIds());
             logger.info(" Method .onCommitMessageEvent complete result object: {}", event);
-            return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error("Method .onCommitMessageEvent error={}", e.getMessage(), e);
             throw e;
         }
@@ -377,7 +403,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 .setMessageTimestamp(info.getMessageTimestamp())
                 .setLastAccessTime(LocalDateTime.now()) // текущее время!!
                 .setReadTime(info.getReadTime())
-                .setWasRead(info.getWasRead())
+                .setWasRead(info.wasRead())
                 .build();
     }
 }

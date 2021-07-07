@@ -14,14 +14,23 @@ public interface ChatEngineController {
      *
      * @param userId - user id
      */
-    void authorize(String userId);
+    String authorize(String userId);
 
     /**
      * Logout
      *
      * @param userId - user id.
+     * @return - logout result
      */
-    void logout(String userId);
+    String logout(String userId);
+
+    /**
+     * Get messages form specific time up to current/
+     *
+     * @param sender       - sender user id
+     * @param recipient    - recipient user id
+     */
+    List<MessageInfo> getMessages(String sender, String recipient);
 
     /**
      * Get messages form specific time up to current/
