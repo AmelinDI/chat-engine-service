@@ -117,4 +117,10 @@ public class ChatEngineControllerImpl implements ChatEngineController {
     public List<UserInfo> getAllUsers() {
         return chatEngineService.getAllUsers();
     }
+
+    @PostMapping("registration/user")
+    @Override
+    public UserInfo createUser(@RequestBody UserInfo user) {
+        return chatEngineService.createUser(user);
+    }
 }

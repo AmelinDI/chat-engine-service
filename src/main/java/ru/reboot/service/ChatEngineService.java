@@ -61,4 +61,6 @@ public interface ChatEngineService {
      * Get all users.
      */
     List<UserInfo> getAllUsers();
+
+    UserInfo createUser(UserInfo user);
 }
