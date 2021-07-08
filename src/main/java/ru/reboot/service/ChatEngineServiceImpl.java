@@ -24,7 +24,7 @@ import ru.reboot.error.BusinessLogicException;
 import ru.reboot.error.ErrorCode;
 
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -132,10 +132,9 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             if (Objects.isNull(message)) {
                 throw new BusinessLogicException("Message parameter of .send method is null", ErrorCode.ILLEGAL_ARGUMENT);
             }
-            String receiver = message.getRecipient();
 
             MessageInfo result = addMessageToStorage(message);
-            addMessageToRecentMessages(message);
+            addMessageToRecentMessages(result);
 
             logger.info("Method .send(MessageInfo message) completed userId={},result={}", message, result);
             return result;
