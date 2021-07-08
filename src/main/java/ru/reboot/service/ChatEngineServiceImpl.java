@@ -380,6 +380,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
             if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
                 logger.info("Method .createUser completed userId={}.", responseEntity.getBody());
+                userCache.addUser(responseEntity.getBody());
                 return responseEntity.getBody();
             }
             else{
