@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -22,12 +24,9 @@ import ru.reboot.error.BusinessLogicException;
 import ru.reboot.error.ErrorCode;
 
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
+import javax.transaction.Transactional;;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -92,7 +91,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             }
             logger.info("Method .authorize completed userId={}.", userId);
         } catch (Exception e) {
-            logger.error("Error to .authorize error={}.", userId);
+            logger.error("Error to .authorize error={}.", e.getMessage());
             throw e;
         }
     }
@@ -317,11 +316,10 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      *
      * @param raw - serialized CommitMessageEvent instance with Collection of MessageIds
      */
-    @Transactional
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
     public void onCommitMessageEvent(String raw) throws JsonProcessingException {
-        logger.info(" >> Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
-        try {
+        logger.info(" << Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
+        try{
             ObjectMapper objectMapper = new ObjectMapper();
             CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
             if (event.getMessageIds().isEmpty()) {
@@ -363,6 +361,33 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
         for (UserInfo userInfo : authDBUsers) {
             userCache.addUser(userInfo);
+        }
+    }
+
+    /** Create new User with RestTemplate by POST "/auth/user" from  auth-service
+     *
+     * @param user - UserInfo instance of user to create in DB
+     * @return
+     */
+    @Override
+    public UserInfo createUser(UserInfo user){
+        try {
+            logger.info("Method .createUser user={}.", user);
+
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<UserInfo> responseEntity = restTemplate.postForEntity(authServiceURL + "/auth/user",user,UserInfo.class);
+
+            if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
+                logger.info("Method .createUser completed userId={}.", responseEntity.getBody());
+                return responseEntity.getBody();
+            }
+            else{
+                throw new BusinessLogicException("New user in .createUser cannot be created", ErrorCode.DATABASE_ERROR);
+            }
+        } catch (Exception e) {
+            logger.error("Error to .createUser error={}.", e.getMessage());
+            throw e;
         }
     }
 

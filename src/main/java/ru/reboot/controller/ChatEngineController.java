@@ -1,5 +1,7 @@
 package ru.reboot.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
@@ -66,4 +68,6 @@ public interface ChatEngineController {
      * Get all users.
      */
     List<UserInfo> getAllUsers();
+
+    UserInfo createUser(UserInfo user);
 }

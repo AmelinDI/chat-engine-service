@@ -25,6 +25,6 @@ public interface MessageRepository extends JpaRepository<MessageEntity, String> 
 
     @Modifying
     @Transactional
-    @Query("UPDATE MessageEntity m SET m.wasRead =TRUE ,m.readTime=CURRENT_TIMESTAMP where  m.id IN :messageIds")
-    int updateWasReadByIds(@Param("messageIds") Collection<String> messageIds);
+    @Query("UPDATE MessageEntity m SET m.wasRead =TRUE ,m.readTime=CURRENT_TIMESTAMP where  m.id IN (:messageIds)")
+    void updateWasReadByIds(@Param("messageIds") Collection<String> messageIds);
 }
