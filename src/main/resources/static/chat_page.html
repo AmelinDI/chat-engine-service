@@ -222,6 +222,7 @@
     var currentCompanionName = '';
     var allUsers = {};
     var chatInfoList = {};
+    var sortList = [];
 
     drawChats();
 
@@ -309,7 +310,6 @@
         data.lastAccessTime= getCurrentTime();
         data.wasRead=false
         data.readTime=null
-
         $.ajax({
             url: "http://localhost:7086/chat/message",
             type: 'POST',
@@ -317,9 +317,11 @@
             dataType: 'json',
             contentType: 'application/json',
             success: function (result) {
-                secondLoopLoad();
+                let tmp = [];
+                tmp[0]=result;
+                drawMap(tmp);
+                lastAccessDateTime = getCurrentTime();
                 $("#input-message").val('');
-
             },
             error: function (result) {
                 console.log("messages wasn't be downloaded")
@@ -334,6 +336,7 @@
         let sender = element.children[0].innerHTML;
         currentCompanionName = sender;
         if($('#conpanionName').val()!=sender) {
+            sortList = [];
             document.getElementById("messageBody").innerHTML="";
             $("#currentCompanion").empty();
             $("#input-message").val('');
@@ -351,9 +354,9 @@
             dataType: 'json',
             success: function (result) {
                 lastAccessDateTime = getCurrentTime();
-                setInterval(secondLoopLoad, 3000);
-                setInterval(updateChatInfos, 3000);
                 drawMap(result);
+                setInterval(secondLoopLoad, 2000);
+                setInterval(updateChatInfos, 2000);
             },
             error: function (result) {
                 console.log("getting message is failed");
@@ -404,7 +407,6 @@
                     chatInfoList[key] = result1[i];
                 }
                 console.log(chatInfoList);
-
                 function drawElements(allUsers, chatInfoList) {
                     $("#nobull").empty();
                     $.each(allUsers, function (koy, val) {
@@ -428,12 +430,10 @@
     }
 
     function drawMap(list) {
-        let sortList = list.sort(function(a,b){
+        let tmpList = new Set(list);
+        sortList = Array.from(tmpList).sort(function(a,b){
             return new Date(a.messageTimestamp) - new Date(b.messageTimestamp);
         });
-        console.log(list)
-        console.log(sortList);
-        lastAccessDateTime = getCurrentTime();
         for (let i = 0; i < sortList.length; i++) {
             if (sortList[i].sender == currentCompanionId) {
                 let messageSender = "<p class='sender'>"+sortList[i].messageTimestamp+" " + sortList[i].content + "</p>";
@@ -447,7 +447,7 @@
 
     function getCurrentTime () {
         let tzoffset = (new Date()).getTimezoneOffset() * 60000;
-        return (new Date(Date.now() - tzoffset)).toISOString().slice(0, -5);
+        return (new Date(Date.now() - tzoffset)).toISOString();
     }
 </script>
 </body>
