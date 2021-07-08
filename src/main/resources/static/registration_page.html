@@ -69,7 +69,7 @@
         <input type="text" id="login" placeholder="login"/>
         <input type="password" id="password" placeholder="password"/>
         <input type="text" id="roles" placeholder="roles"/>
-        <button onkeypress="login()" onclick="register()" id="login-button" type="submit">Register</button>
+        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Register</button>
         <a href="index.html.html" ><button id="registration" type="button" >Login</button></a>
         <br>
     </div>
@@ -77,29 +77,37 @@
 <script>
     function register() {
         let data = {}
+        let roles = ($('#roles').val()).split(",");
+        data["userId"] = generateGUID();
         data["firstName"] = $('#firstName').val()
         data["lastName"] = $('#lastName').val();
         data["secondName"] = $('#secondName').val();
         data["birthDate"] = $('#birthDate').val();
         data["login"] = $('#login').val();
         data["password"] = $('#password').val()
-        data["roles"] = $('#roles').val();
-
+        data["roles"] = roles;
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "http://localhost:7086/authentication/registr",
-            data: data,
+            url: "http://localhost:7086/chat/registration/user",
+            data: JSON.stringify(data),
             dataType: 'json',
             cache: false,
             success: function(data){
                 console.log(data)
-                window.location.href = 'chat_page.html';
+                window.location.href = 'index.html';
             },
             error: function (e) {
                 console.log("ERROR : ", e);
             }
     });}
+
+    function generateGUID(){
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+    }
 </script>
 </body>
 </html>

@@ -30,7 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/chat/authentication/login").permitAll()
                 .antMatchers("/chat/registration/user").permitAll()
                 .antMatchers("/authentication/login").permitAll()
-                .antMatchers("/authentication/logon").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -39,7 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-
         auth.userDetailsService(new CustomUserDetailedService(authServiceURL));
     }
 
