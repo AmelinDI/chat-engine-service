@@ -351,8 +351,8 @@
             dataType: 'json',
             success: function (result) {
                 lastAccessDateTime = getCurrentTime();
-                setInterval(secondLoopLoad, 30000);
-                setInterval(updateChatInfos, 30000);
+                setInterval(secondLoopLoad, 3000);
+                setInterval(updateChatInfos, 3000);
                 drawMap(result);
             },
             error: function (result) {

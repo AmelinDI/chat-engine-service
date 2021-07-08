@@ -72,7 +72,10 @@ public class ChatEngineControllerImpl implements ChatEngineController {
                 .filter(msg -> msg.getRecipient().equals(recipient))
                 .map(MessageInfo::getId)
                 .collect(Collectors.toList());
-        chatEngineService.commitMessages(messageIds);
+
+        if (messageIds.size() > 0) {
+            chatEngineService.commitMessages(messageIds);
+        }
         return messageInfos;
     }
 
@@ -84,7 +87,10 @@ public class ChatEngineControllerImpl implements ChatEngineController {
                 .filter(msg -> msg.getRecipient().equals(recipient))
                 .map(MessageInfo::getId)
                 .collect(Collectors.toList());
-        chatEngineService.commitMessages(messageIds);
+
+        if (messageIds.size() > 0) {
+            chatEngineService.commitMessages(messageIds);
+        }
         return messageInfos;
     }
 

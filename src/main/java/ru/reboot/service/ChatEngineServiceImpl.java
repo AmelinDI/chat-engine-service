@@ -35,7 +35,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
 
     private static final Logger logger = LogManager.getLogger(ChatEngineServiceImpl.class);
 
-    private ObjectMapper mapper;
     private KafkaTemplate<String, String> kafkaTemplate;
     private UserCache userCache;
     private MessageRepository messageRepository;
@@ -49,11 +48,6 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @Autowired
     public void setUserCache(UserCache userCache) {
         this.userCache = userCache;
-    }
-
-    @Autowired
-    public void setMapper(ObjectMapper mapper) {
-        this.mapper = mapper;
     }
 
     @Autowired
@@ -270,7 +264,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                     chatInfo.setCompanionId(a);
                     chatInfo.setUnreadMessagesCount(Math.toIntExact(messageInfos
                             .stream()
-                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.wasRead())
+                            .filter(b -> b.getSender().equalsIgnoreCase(a) && !b.getWasRead())
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
@@ -381,7 +375,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 .setMessageTimestamp(entity.getMessageTimestamp())
                 .setLastAccessTime(entity.getLastAccessTime())
                 .setReadTime(entity.getReadTime())
-                .setWasRead(entity.wasRead())
+                .setWasRead(entity.getWasRead())
                 .build();
     }
 
@@ -399,7 +393,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 .setMessageTimestamp(info.getMessageTimestamp())
                 .setLastAccessTime(LocalDateTime.now()) // текущее время!!
                 .setReadTime(info.getReadTime())
-                .setWasRead(info.wasRead())
+                .setWasRead(info.getWasRead())
                 .build();
     }
 }
