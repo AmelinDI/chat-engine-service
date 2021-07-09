@@ -1,96 +1,96 @@
 <html>
 <header>
-    <title>SChat_authorization</title>
-    <script
-            src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-            crossorigin="anonymous"></script>
-    <style>
-        .login-page {
-            width: 360px;
-            padding: 8% 0 0;
-            margin: auto;
-        }
+  <title>SChat_authorization</title>
+  <script
+          src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+          crossorigin="anonymous"></script>
+  <style>
+    .login-page {
+      width: 360px;
+      padding: 8% 0 0;
+      margin: auto;
+    }
 
-        .form {
-            position: relative;
-            background: black;
-            max-width: 300px;
-            margin: 0 auto 100px;
-            padding: 45px;
-            text-align: center;
-        }
+    .form {
+      position: relative;
+      background: black;
+      max-width: 300px;
+      margin: 0 auto 100px;
+      padding: 45px;
+      text-align: center;
+    }
 
-        .form input {
-            font-family: "Arial", sans-serif;
-            outline: 0;
-            background: #f2f2f2;
-            width: 100%;
-            border: 0;
-            margin: 0 0 15px;
-            padding: 15px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
+    .form input {
+      font-family: "Arial", sans-serif;
+      outline: 0;
+      background: #f2f2f2;
+      width: 100%;
+      border: 0;
+      margin: 0 0 15px;
+      padding: 15px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
 
-        .form button {
-            font-family: "Arial", sans-serif;
-            outline: 0;
-            background: #111111;
-            width: 100%;
-            border: 0;
-            padding: 15px;
-            color: lawngreen;
-            font-size: 14px;
-        }
+    .form button {
+      font-family: "Arial", sans-serif;
+      outline: 0;
+      background: #111111;
+      width: 100%;
+      border: 0;
+      padding: 15px;
+      color: lawngreen;
+      font-size: 14px;
+    }
 
-        .form button:hover {
-            background: green;
-            color: white;
-            cursor: pointer
-        }
+    .form button:hover {
+      background: green;
+      color: white;
+      cursor: pointer
+    }
 
-        body {
-            background: black;
-        }
-    </style>
+    body {
+      background: black;
+    }
+  </style>
 </header>
 <body>
 
 <div class="login-page">
-    <div class="form">
-        <h1 style="color: white">Authorization
-            <b style="color: mediumseagreen">Schat</b></h1>
-        <br>
-        <input type="text" id="login" placeholder="login"/>
-        <input type="password" id="password" placeholder="password"/>
-        <button onkeypress="login()" onclick="login()" id="login-button" type="submit">Login</button>
-        <br>
-        <br>
-        <button id="registration" type="button" onclick="registration()">Registration</button>
-        </br>
+  <div class="form">
+    <h1 style="color: white">Authorization
+      <b style="color: mediumseagreen">Schat</b></h1>
+    <br>
+    <input type="text" id="login" placeholder="login"/>
+    <input type="password" id="password" placeholder="password"/>
+    <button onkeypress="login()" onclick="login()" id="login-button" type="submit">Login</button>
+    <br>
+    <br>
+    <a href="registration_page.html" ><button id="registration" type="button" >Registration</button></a>
+    </br>
 
-    </div>
+  </div>
 </div>
 <script>
-    function login() {
-        let data = {}
-        data["login"] = $('#login').val();
-        data["password"] = $('#password').val();
-        $.ajax({
-            type: "POST",
-            contentType: "application/json",
-            url: "http://localhost:7086/authentication/login",
-            data: JSON.stringify(data),
-            dataType: 'json',
-            cache: false,
-            success: function(data){
-                console.log(data)
-                window.location.href = 'chat_page.html';
-            },
-            error: function (e) {
-                console.log("ERROR : ", e);
-            }
+  function login() {
+    let data = {}
+    data["login"] = $('#login').val();
+    data["password"] = $('#password').val();
+    $.ajax({
+      type: "POST",
+      contentType: "application/json",
+      url: "http://localhost:7086/authentication/login",
+      data: JSON.stringify(data),
+      dataType: 'json',
+      cache: false,
+      success: function(data){
+        console.log(data)
+        window.location.href = 'chat_page.html';
+      },
+      error: function (e) {
+        console.log("ERROR : ", e);
+      }
     });}
 </script>
 </body>

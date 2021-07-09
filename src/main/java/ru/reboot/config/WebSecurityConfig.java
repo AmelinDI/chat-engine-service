@@ -25,7 +25,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/registration_page.html").permitAll()
                 .antMatchers("/index.html").permitAll()
+                .antMatchers("/chat/authentication/login").permitAll()
+                .antMatchers("/chat/registration/user").permitAll()
                 .antMatchers("/authentication/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -35,7 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-
         auth.userDetailsService(new CustomUserDetailedService(authServiceURL));
     }
 

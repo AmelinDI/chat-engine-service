@@ -83,7 +83,7 @@ public class MessageEntity {
         this.lastAccessTime = lastAccessTime;
     }
 
-    public boolean wasRead() {
+    public boolean getWasRead() {
         return wasRead;
     }
 

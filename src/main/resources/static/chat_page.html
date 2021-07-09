@@ -50,7 +50,6 @@
             position: fixed;
             z-index: 1;
             top: 0;
-            overflow-x: scroll;
             padding-top: 20px;
         }
 
@@ -61,6 +60,7 @@
 
         .right {
             right: 0;
+            overflow: scroll;
             background-color: mediumseagreen;
         }
 
@@ -94,13 +94,12 @@
             bottom: 0;
             height: 25px;
         }
-
         }
 
         .sender {
             color: black;
             background: #0B93F6;
-            margin-left: 200px;
+            margin-left: 100px;
 
         :before {
             right: -7px;
@@ -121,7 +120,7 @@
         .receiver {
             color: black;
             background: #E5E5EA;
-            margin-right: 200px;
+            margin-right: 100px;
 
         :before {
             left: -7px;
@@ -174,28 +173,17 @@
             margin-right: auto;
         }
 
-        .companion-name-message {
-            position: absolute;
-            top: -12px;
-            right: 280px;
-            padding: 5px 10px;
-            border-radius: 20%;
-            background: black;
-            color: lawngreen;
-            font-size: 12px;
-        }
-
         #messageBody{
-            margin-bottom: 30px;
-            padding-bottom: 50px;
-        }
-
-        .comanionId{
+            margin-bottom: 100px;
+            padding-bottom: 130px;
             visibility: hidden;
         }
 
         .header-right {
             color: lawngreen;
+        }
+        #companionheader{
+            visibility: hidden;
         }
     </style>
 </head>
@@ -204,9 +192,9 @@
 
 <div class="split left">
     <div class="centered">
-        <h3 class="header-right"><span>Welcome, </span><span id="setnamehere"></span></h3>
-        <button type="button" onclick="logout()">logout</button>
-        <h3 style="color: #f2f2f2">Your companions</h3>
+        <h3 class="header-right"><span>Welcome, </span><span id="setnamehere"></span>     <button type="button" onclick="logout()">logout</button></h3>
+
+        <h3 id="companionheader" style="color: #f2f2f2">Your companions</h3>
         <ul id="nobull">
         </ul>
     </div>
@@ -216,6 +204,7 @@
     <div id="messageBody" class="centered">
 
     </div>
+
     <div id="input-message-area">
         <div id="currentCompanion"></div>
         <textarea id="input-message" name="message-text" cols="10" rows="2"
@@ -223,18 +212,17 @@
         <br>
         <button id="send-message" type="button" onclick="sendMessage(this)">send message</button>
         <br>
-        </div>
+    </div>
 </div>
 
 
 <script>
     var currenUser = {};
-    var defaultAccessDate = '1970-01-01T00:00:01';
     var lastAccessDateTime = '';
-    var currentCompanion = '';
+    var currentCompanionName = '';
     var allUsers = {};
     var chatInfoList = {};
-    var currentCompanionId = ""
+    var sortList = [];
 
     drawChats();
 
@@ -247,7 +235,6 @@
                 currenUser["curentuseruserId"] = result["userId"];
                 currenUser["curentuserlogin"] = result["login"];
                 currenUser["curentusername"] = result["firstName"];
-                console.log(currenUser);
                 $("#setnamehere").text(currenUser.curentusername);
                 $.ajax({
                     url: "http://localhost:7086/chat/user/all",
@@ -258,15 +245,14 @@
                             let key = result[i].userId;
                             allUsers[key] = result[i];
                         }
-                        console.log(allUsers);
+
                         $.ajax({
                             url: "http://localhost:7086/chat/user/authorize",
                             data: currenUser.curentuseruserId,
                             method: 'POST',
                             dataType: 'json',
                             contentType: "application/json",
-                            success: function (result2) {
-                                console.log('authorize complete');
+                            success: function () {
                                 $.ajax({
                                     url: "http://localhost:7086/chat/all?userId=" + currenUser.curentuseruserId,
                                     method: 'GET',
@@ -276,22 +262,19 @@
                                             let key = result1[i].companionId;
                                             chatInfoList[key] = result1[i];
                                         }
+                                        $('#companionheader').css("visibility", "visible");
                                         function drawElements(allUsers, chatInfoList) {
-                                            $.each(allUsers, function (koy, val) {
+                                            $.each(allUsers, function (key, val) {
                                                 let createListString = document.createElement("li")
                                                 createListString.style.margin = '15px'
-                                                console.log(chatInfoList);
-                                                console.log(chatInfoList[koy])
-
-                                                if (chatInfoList[koy]!==undefined) {
-                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[koy].unreadMessagesCount + "</span></div><br>"
+                                                if (chatInfoList[key]!==undefined) {
+                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[key].unreadMessagesCount + "</span></div><br>"
                                                 } else {
                                                     createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
                                                 }
                                                 $("#nobull").append(createListString);
                                             });
                                         }
-
                                         drawElements(allUsers, chatInfoList);
                                     },
                                     error: function (result) {
@@ -327,38 +310,38 @@
         data.lastAccessTime= getCurrentTime();
         data.wasRead=false
         data.readTime=null
-
         $.ajax({
             url: "http://localhost:7086/chat/message",
             type: 'POST',
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
-            success: function () {
+            success: function (result) {
+                let tmp = [];
+                tmp[0]=result;
+                drawMap(tmp);
+                lastAccessDateTime = getCurrentTime();
                 $("#input-message").val('');
-                $("#messageBody").append("<p class='receiver'>"+getCurrentTime()+ "  " + messageText + "</p>");
             },
             error: function (result) {
+                console.log("messages wasn't be downloaded")
             }
         });
     }
 
     function clickOnCompanion (element) {
-        $('#input-message-area').css("visibility", "visible")
+        $('#messageBody').css("visibility", "visible");
+        $('#input-message-area').css("visibility", "visible");
         currentCompanionId = element.children[1].getAttribute('placeholder');
         let sender = element.children[0].innerHTML;
-        console.log(sender);
-        currentCompanion = sender;
+        currentCompanionName = sender;
         if($('#conpanionName').val()!=sender) {
+            sortList = [];
             document.getElementById("messageBody").innerHTML="";
             $("#currentCompanion").empty();
             $("#input-message").val('');
-            $("#currentCompanion").append("<h5 style='color: red'>Type message to:</h5>");
-            $("#currentCompanion").append("<h3 id='conpanionName' style='color: lawngreen'><span id='recipientName'>" + sender + "</span></h3>");
+            $("#currentCompanion").append("<h3 style='color: white'>Type message to: " + sender + "</span></h3>");
             firstLoad();
-            lastAccessDateTime = new Date().toISOString();
-            setInterval(secondLoopLoad, 30000);
-            setInterval(updateChatInfos, 30000);
         }else {
 
         }
@@ -366,25 +349,17 @@
 
     function firstLoad(){
         $.ajax({
-            url: "http://localhost:7086/chat/message/sinceTime?sender=" + currentCompanionId + "&recipient=" + currenUser["curentuseruserId"] + "&timestamp=" + defaultAccessDate,
+            url: "http://localhost:7086/chat/message/all?sender=" + currentCompanionId + "&recipient=" + currenUser["curentuseruserId"],
             method: 'GET',
             dataType: 'json',
             success: function (result) {
+                lastAccessDateTime = getCurrentTime();
                 drawMap(result);
-                // console.log(result);
-                // for (let i = 0; i < result.length; i++) {
-                //     lastAccessDateTime = new Date().toISOString();
-                //     if (result[i].sender == currentCompanionId) {
-                //         let messageSender = "<p class='sender'>" + result[i].content + "</p>";
-                //         $("#messageBody").append(messageSender);
-                //     } else {
-                //         let messageRecepient = "<p class='receiver'>" + result[i].content + "</p>";
-                //         $("#messageBody").append(messageRecepient);
-                //     }
-                // }
+                setInterval(secondLoopLoad, 2000);
+                setInterval(updateChatInfos, 2000);
             },
             error: function (result) {
-                console.log("error");
+                console.log("getting message is failed");
             }
         });
     }
@@ -395,21 +370,8 @@
             method: 'GET',
             dataType: 'json',
             success: function (result) {
-                lastAccessDateTime = new Date().toISOString();
+                lastAccessDateTime = getCurrentTime();
                 drawMap(result);
-                // console.log(result);
-                // lastAccessDateTime = new Date().toISOString();
-                // for (let i = 0; i < result.length; i++) {
-                //     alert(result[i].sende);
-                //     alert(currentCompanionId);
-                //     if (result[i].sender == currentCompanionId) {
-                //         let messageSender = "<p class='sender'>" + result[i].content + "</p>";
-                //         $("#messageBody").append(messageSender);
-                //     } else {
-                //         let messageRecepient = "<p class='receiver'>" + result[i].content + "</p>";
-                //         $("#messageBody").append(messageRecepient);
-                //     }
-                // }
             },
             error: function (result) {
             }
@@ -418,12 +380,10 @@
 
     function logout(){
         let data = {};
-        data["userId"] = $('#setnamehere').val();
         $.ajax({
             url: "http://localhost:7086/chat/user/logout",
             contentType: "application/json",
-            method: 'POST',
-            data: JSON.stringify(data),
+            method: 'GET',
             dataType: 'json',
             success: function (result) {
                 window.location.href = 'index.html';
@@ -435,7 +395,8 @@
     }
 
     function updateChatInfos()
-    {console.log("updateChatInfos - start");
+    {
+        console.log("updateChatInfos start by - "+currenUser.curentuseruserId);
         $.ajax({
             url: "http://localhost:7086/chat/all?userId=" + currenUser.curentuseruserId,
             method: 'GET',
@@ -446,7 +407,6 @@
                     chatInfoList[key] = result1[i];
                 }
                 console.log(chatInfoList);
-
                 function drawElements(allUsers, chatInfoList) {
                     $("#nobull").empty();
                     $.each(allUsers, function (koy, val) {
@@ -470,13 +430,10 @@
     }
 
     function drawMap(list) {
-        // let sortList = list.sort((a, b) => b.messageTimestamp - a.messageTimestamp);
-        let sortList = list.sort(function(a,b){
+        let tmpList = new Set(list);
+        sortList = Array.from(tmpList).sort(function(a,b){
             return new Date(a.messageTimestamp) - new Date(b.messageTimestamp);
         });
-        console.log(list)
-        console.log(sortList);
-        lastAccessDateTime = getCurrentTime();
         for (let i = 0; i < sortList.length; i++) {
             if (sortList[i].sender == currentCompanionId) {
                 let messageSender = "<p class='sender'>"+sortList[i].messageTimestamp+" " + sortList[i].content + "</p>";
@@ -489,8 +446,8 @@
     }
 
     function getCurrentTime () {
-        let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-        return (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+        let tzoffset = (new Date()).getTimezoneOffset() * 60000;
+        return (new Date(Date.now() - tzoffset)).toISOString();
     }
 </script>
 </body>

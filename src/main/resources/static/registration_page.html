@@ -1,0 +1,113 @@
+<html>
+<header>
+    <title>SChat_authorization</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <style>
+        .login-page {
+            width: 360px;
+            padding: 8% 0 0;
+            margin: auto;
+        }
+
+        .form {
+            position: relative;
+            background: black;
+            max-width: 300px;
+            margin: 0 auto 100px;
+            padding: 45px;
+            text-align: center;
+        }
+
+        .form input {
+            font-family: "Arial", sans-serif;
+            outline: 0;
+            background: #f2f2f2;
+            width: 100%;
+            border: 0;
+            margin: 0 0 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form button {
+            font-family: "Arial", sans-serif;
+            outline: 0;
+            background: #111111;
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: lawngreen;
+            font-size: 14px;
+        }
+
+        .form button:hover {
+            background: green;
+            color: white;
+            cursor: pointer
+        }
+
+        body {
+            background: black;
+        }
+    </style>
+</header>
+<body>
+
+<div class="login-page">
+    <div class="form">
+        <h1 style="color: white">Authorization
+            <b style="color: mediumseagreen">Schat</b></h1>
+        <br>
+        <input type="text" id="firstName" placeholder="firstName"/>
+        <input type="text" id="lastName" placeholder="lastName"/>
+        <input type="text" id="secondName" placeholder="secondName"/>
+        <input type="datetime-local" id="birthDate" placeholder="birthDate"/>
+        <input type="text" id="login" placeholder="login"/>
+        <input type="password" id="password" placeholder="password"/>
+        <input type="text" id="roles" placeholder="roles"/>
+        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Register</button>
+        <a href="index.html.html" ><button id="registration" type="button" >Login</button></a>
+        <br>
+    </div>
+</div>
+<script>
+    function register() {
+        let data = {}
+        let roles = ($('#roles').val()).split(",");
+        data["userId"] = generateGUID();
+        data["firstName"] = $('#firstName').val()
+        data["lastName"] = $('#lastName').val();
+        data["secondName"] = $('#secondName').val();
+        data["birthDate"] = $('#birthDate').val();
+        data["login"] = $('#login').val();
+        data["password"] = $('#password').val()
+        data["roles"] = roles;
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "http://localhost:7086/chat/registration/user",
+            data: JSON.stringify(data),
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                console.log(data)
+                window.location.href = 'index.html';
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+            }
+    });}
+
+    function generateGUID(){
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+    }
+</script>
+</body>
+</html>
