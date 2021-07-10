@@ -65,19 +65,17 @@
         <input type="text" id="firstName" placeholder="firstName"/>
         <input type="text" id="lastName" placeholder="lastName"/>
         <input type="text" id="secondName" placeholder="secondName"/>
-        <input type="datetime-local" id="birthDate" placeholder="birthDate"/>
+        <input type="date" id="birthDate" placeholder="birthDate"/>
         <input type="text" id="login" placeholder="login"/>
         <input type="password" id="password" placeholder="password"/>
-        <input type="text" id="roles" placeholder="roles"/>
-        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Register</button>
-        <a href="index.html.html" ><button id="registration" type="button" >Login</button></a>
+        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Create</button>
+        <a href="index.html.html" ><button id="registration" type="button" >Back</button></a>
         <br>
     </div>
 </div>
 <script>
     function register() {
         let data = {}
-        let roles = ($('#roles').val()).split(",");
         data["userId"] = generateGUID();
         data["firstName"] = $('#firstName').val()
         data["lastName"] = $('#lastName').val();
@@ -85,7 +83,6 @@
         data["birthDate"] = $('#birthDate').val();
         data["login"] = $('#login').val();
         data["password"] = $('#password').val()
-        data["roles"] = roles;
         $.ajax({
             type: "POST",
             contentType: "application/json",
