@@ -1,6 +1,5 @@
 package ru.reboot.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,9 +66,8 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public void authorize(String userId) {
+        logger.info("Method .authorize userId={}", userId);
         try {
-            logger.info("Method .authorize userId={}.", userId);
-
             if (Objects.isNull(userId) || userId.length() == 0) {
                 throw new BusinessLogicException("userID parameter of .authorize method is null or empty", ErrorCode.ILLEGAL_ARGUMENT);
             }
@@ -89,9 +87,9 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 MessageEntity messageEntity = convertMessageInfoToMessageEntity(messageInfo);
                 messageRepository.save(messageEntity);
             }
-            logger.info("Method .authorize completed userId={}.", userId);
+            logger.info("Method .authorize completed userId={}", userId);
         } catch (Exception e) {
-            logger.error("Error to .authorize error={}.", e.getMessage());
+            logger.error("Failed to .authorize error={}", e.toString(), e);
             throw e;
         }
     }
@@ -112,7 +110,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             deletedMessages += messageRepository.deleteBySenderInAndRecipient(userCache.getOfflineUserIds(), userId);
             logger.info("Method .logout complete userId={}, number of deleted messages={}", userId, deletedMessages);
         } catch (Exception e) {
-            logger.error("Method .getAllUsers error={}", e.getMessage(), e);
+            logger.error("Failed to .logout userId={} error={}", userId, e.toString(), e);
             throw e;
         }
 
@@ -126,9 +124,8 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public MessageInfo send(MessageInfo message) {
+        logger.info("Method .send message={}", message);
         try {
-            logger.info("Method .send message={}.", message);
-
             if (Objects.isNull(message)) {
                 throw new BusinessLogicException("Message parameter of .send method is null", ErrorCode.ILLEGAL_ARGUMENT);
             }
@@ -136,15 +133,13 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             MessageInfo result = addMessageToStorage(message);
             addMessageToRecentMessages(result);
 
-            logger.info("Method .send(MessageInfo message) completed userId={},result={}", message, result);
+            logger.info("Method .send completed message={} return={}", message, result);
             return result;
-
         } catch (Exception e) {
-            logger.error("Error to .send(MessageInfo message) error = {}", e.getMessage(), e);
+            logger.error("Failed to .send message={} error = {}", message, e.toString(), e);
             throw e;
         }
     }
-
 
     /**
      * Get messages form specific time up to current/
@@ -153,7 +148,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      * @param recipient - recipient user id
      */
     public List<MessageInfo> getMessages(String sender, String recipient) {
-        logger.info("Method .getMessages sender={}, recipient={}.", sender, recipient);
+        logger.info("Method .getMessages sender={} recipient={}", sender, recipient);
         try {
             if (sender == null || sender.isEmpty() || recipient == null || recipient.isEmpty()) {
                 throw new BusinessLogicException("Parameters are null or empty", ErrorCode.ILLEGAL_ARGUMENT);
@@ -169,15 +164,14 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                         .stream()
                         .map(this::convertMessageEntityToMessageInfo)
                         .collect(Collectors.toList()));
-                logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
+                logger.info("Method .getMessages completed sender={} recipient={} return={}", sender, recipient, messageInfos);
                 return messageInfos;
             }
         } catch (Exception e) {
-            logger.error("Error to .getAllMessages error = {}", e.getMessage(), e);
+            logger.error("Failed to .getMessages sender={} recipient={} error={}", sender, recipient, e.toString(), e);
             throw e;
         }
     }
-
 
     /**
      * Get messages form specific time up to current/
@@ -188,7 +182,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public List<MessageInfo> getMessages(String sender, String recipient, LocalDateTime lastSyncTime) {
-        logger.info("Method .getMessages sender={}, recipient={}, lastSyncTime={}.", sender, recipient, lastSyncTime);
+        logger.info("Method .getMessages sender={} recipient={} lastSyncTime={}", sender, recipient, lastSyncTime);
         try {
             if (sender == null || sender.isEmpty() || recipient == null || recipient.isEmpty() || lastSyncTime == null) {
                 throw new BusinessLogicException("Parameters are null or empty", ErrorCode.ILLEGAL_ARGUMENT);
@@ -204,15 +198,14 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                         .stream()
                         .map(this::convertMessageEntityToMessageInfo)
                         .collect(Collectors.toList()));
-                logger.info("Method .getChatsInfo completed chats messages={}", messageInfos);
+                logger.info("Method .getMessages completed sender={} recipient={} lastSyncTime={} return={}", sender, recipient, lastSyncTime, messageInfos);
                 return messageInfos;
             }
         } catch (Exception e) {
-            logger.error("Error to .getAllMessages error = {}", e.getMessage(), e);
+            logger.error("Failed to .getMessages sender={} recipient={} lastSyncTime={} error={}", sender, recipient, lastSyncTime, e.toString(), e);
             throw e;
         }
     }
-
 
     /**
      * Send message ids to Kafka
@@ -222,18 +215,16 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @Override
     public void commitMessages(List<String> messageIds) {
         ObjectMapper objectMapper = new ObjectMapper();
-
-        logger.info("Method .commitMessages userId={} ", messageIds.toString());
+        logger.info("Method .commitMessages messageIds={}", messageIds.toString());
         try {
             CommitMessageEvent messageEvent = new CommitMessageEvent(messageIds);
             kafkaTemplate.send(CommitMessageEvent.TOPIC, objectMapper.writeValueAsString(messageEvent));
 
             logger.info(">> Sent: {}", objectMapper.writeValueAsString(messageEvent));
         } catch (Exception e) {
-            logger.error("Error to .commitMessages error={}", e.getMessage(), e);
+            logger.error("Failed to .commitMessages messageIds={} error={}", messageIds.toString(), e.toString(), e);
             throw new BusinessLogicException(e.getMessage(), ErrorCode.ILLEGAL_ARGUMENT);
         }
-
     }
 
     /**
@@ -243,7 +234,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      */
     @Override
     public List<ChatInfo> getChatsInfo(String userId) {
-        logger.info("Method .getChatsInfo userId={} ", userId);
+        logger.info("Method .getChatsInfo userId={}", userId);
         try {
             if (Objects.isNull(userId) || userId.isEmpty()) {
                 throw new BusinessLogicException("User id is empty or null", ErrorCode.ILLEGAL_ARGUMENT);
@@ -266,11 +257,11 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                             .count()));
                     return chatInfo;
                 }).collect(Collectors.toList());
-                logger.info("Method .getChatsInfo completed chats result={}", result);
+                logger.info("Method .getChatsInfo completed userId={} return={}", userId, result);
                 return result;
             }
         } catch (Exception e) {
-            logger.error("Error to .getChatsInfo error={}", e.getMessage(), e);
+            logger.error("Failed to .getChatsInfo userId={} error={}", userId, e.toString(), e);
             throw e;
         }
     }
@@ -289,10 +280,10 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             if (allUsersList.size() == 0) {
                 throw new BusinessLogicException("No users found", ErrorCode.USER_NOT_FOUND);
             }
-            logger.info("Method .getAllUsers completed result={}", allUsersList);
+            logger.info("Method .getAllUsers completed return={}", allUsersList);
             return allUsersList;
         } catch (Exception e) {
-            logger.error("Method .getAllUsers error={}", e.getMessage(), e);
+            logger.error("Failed to .getAllUsers error={}", e.toString(), e);
             throw e;
         }
     }
@@ -316,8 +307,8 @@ public class ChatEngineServiceImpl implements ChatEngineService {
      * @param raw - serialized CommitMessageEvent instance with Collection of MessageIds
      */
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
-    public void onCommitMessageEvent(String raw) throws JsonProcessingException {
-        logger.info(" << Method.onCommitMessageEvent topic={}  content={}", CommitMessageEvent.TOPIC, raw);
+    public void onCommitMessageEvent(String raw) {
+        logger.info("Method.onCommitMessageEvent topic={} content={}", CommitMessageEvent.TOPIC, raw);
         try{
             ObjectMapper objectMapper = new ObjectMapper();
             CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
@@ -325,26 +316,24 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 throw new BusinessLogicException("No messagesId", ErrorCode.ILLEGAL_ARGUMENT);
             }
             messageRepository.updateWasReadByIds(event.getMessageIds());
-            logger.info(" Method .onCommitMessageEvent complete result object: {}", event);
+            logger.info("<< Received: {}", raw);
         } catch (Exception e) {
-            logger.error("Method .onCommitMessageEvent error={}", e.getMessage(), e);
-            throw e;
+            logger.error("Failed to .onCommitMessageEvent topic={} content={} error={}", CommitMessageEvent.TOPIC, raw, e.toString(), e);
+            throw new BusinessLogicException(e.getMessage(), ErrorCode.ILLEGAL_ARGUMENT);
         }
     }
 
     /**
-     * Initialisation UserCache with RestTemplate by "/auth/user/all" from  auth-service
+     * Initialisation UserCache with RestTemplate by "/auth/user/all" from auth-service
      */
     @PostConstruct
     public void init() {
         logger.info("Method .init");
         try {
-            logger.info("Method .loadAllUsers");
             loadAllUsers();
-            logger.info("Method .loadAllUsers completed");
             logger.info("Method .init completed");
         } catch (Exception e) {
-            logger.error("Method .init error={}", e.getMessage(), e);
+            logger.error("Failed to .init error={}", e.toString(), e);
             throw e;
         }
     }
@@ -366,27 +355,24 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     /** Create new User with RestTemplate by POST "/auth/user" from  auth-service
      *
      * @param user - UserInfo instance of user to create in DB
-     * @return
+     * @return Returns UserInfo instance
      */
     @Override
     public UserInfo createUser(UserInfo user){
+        logger.info("Method .createUser user={}", user);
         try {
-            logger.info("Method .createUser user={}.", user);
-
             RestTemplate restTemplate = new RestTemplate();
-
             ResponseEntity<UserInfo> responseEntity = restTemplate.postForEntity(authServiceURL + "/auth/user",user,UserInfo.class);
 
             if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
-                logger.info("Method .createUser completed userId={}.", responseEntity.getBody());
-                userCache.addUser(responseEntity.getBody());
-                return responseEntity.getBody();
+                UserInfo userInfo = responseEntity.getBody();
+                userCache.addUser(userInfo);
+                logger.info("Method .createUser completed user={} return={}", user, userInfo);
+                return userInfo;
             }
-            else{
-                throw new BusinessLogicException("New user in .createUser cannot be created", ErrorCode.DATABASE_ERROR);
-            }
+            throw new BusinessLogicException("New user in .createUser cannot be created", ErrorCode.DATABASE_ERROR);
         } catch (Exception e) {
-            logger.error("Error to .createUser error={}.", e.getMessage());
+            logger.error("Failed to .createUser user={} error={}.", user, e.toString(), e);
             throw e;
         }
     }

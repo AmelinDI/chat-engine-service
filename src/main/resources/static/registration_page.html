@@ -76,7 +76,6 @@
 <script>
     function register() {
         let data = {}
-        let roles = ($('#roles').val()).split(",");
         data["userId"] = generateGUID();
         data["firstName"] = $('#firstName').val()
         data["lastName"] = $('#lastName').val();
@@ -84,7 +83,6 @@
         data["birthDate"] = $('#birthDate').val();
         data["login"] = $('#login').val();
         data["password"] = $('#password').val()
-        data["roles"] = "USER";
         $.ajax({
             type: "POST",
             contentType: "application/json",

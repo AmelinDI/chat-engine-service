@@ -267,6 +267,7 @@
                                             let key = result1[i].companionId;
                                             chatInfoList[key] = result1[i];
                                         }
+                                        setInterval(updateChatInfos, 2000);
                                         $('#companionheader').css("visibility", "visible");
                                         function drawElements(allUsers, chatInfoList) {
                                             $.each(allUsers, function (key, val) {
@@ -371,7 +372,6 @@
                 lastAccessDateTime = getCurrentTime();
                 drawMap(result);
                 setInterval(secondLoopLoad, 2000);
-                setInterval(updateChatInfos, 2000);
             },
             error: function (result) {
                 console.log("getting message is failed");
