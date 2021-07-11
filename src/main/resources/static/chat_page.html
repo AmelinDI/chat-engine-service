@@ -188,6 +188,14 @@
         #companionheader{
             visibility: hidden;
         }
+
+        #buttonlogout{
+            width: 80px;
+            height: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
     </style>
 </head>
 <body>
@@ -195,7 +203,7 @@
 
 <div class="split left">
     <div class="centered">
-        <h3 class="header-right"><span>Welcome, </span><span id="setnamehere"></span>     <button type="button" onclick="logout()">logout</button></h3>
+        <h3 class="header-right"><span>Welcome, </span><span id="setnamehere"></span><button type="button" id="buttonlogout" onclick="logout()">logout</button></h3>
 
         <h3 id="companionheader" style="color: #f2f2f2">Your companions</h3>
         <ul id="nobull">
@@ -227,7 +235,7 @@
     var chatInfoList = {};
     var sortList = [];
     const messages = document.getElementById('scrollplace');
-    const messagelist = new Set();
+    var messagelist = new Set();
 
     drawChats();
 
@@ -352,7 +360,7 @@
         if($('#conpanionName').val()!=sender) {
             currentE.setAttribute('style', 'background-color: mediumseagreen');
             element.setAttribute('style', 'background-color: lawngreen');
-            sortList = [];
+            messagelist=new Set();
             document.getElementById("messageBody").innerHTML="";
             $("#currentCompanion").empty();
             $("#input-message").val('');
@@ -446,27 +454,17 @@
             messagelist.add(list.map(a => a.id));
             let tmpList = new Set(list);
             let tmpMSG = list[0];
-            console.log(list);
             if (!messagelist.has(tmpMSG["id"])) {
-                console.log("list[0]");
-                console.log(tmpMSG);
-                console.log("messagelist");
-                console.log(messagelist)
-                console.log("size before");
-                console.log(messagelist.size)
-                console.log("!messagelist.has(list[0])");
-                console.log(!messagelist.has(tmpMSG["id"]))
                 messagelist.add(tmpMSG["id"]);
                 sortList = Array.from(tmpList).sort(function (a, b) {
                     return new Date(a.messageTimestamp) - new Date(b.messageTimestamp);
                 });
-                console.log(JSON.stringify(sortList));
                 for (let i = 0; i < sortList.length; i++) {
                     if (sortList[i].sender == currentCompanionId) {
-                        let messageSender = "<p class='sender'>" + sortList[i].messageTimestamp + " " + sortList[i].content + "</p>";
+                        let messageSender = "<p class='sender'>" + sliceTime(sortList[i].messageTimestamp) + " " + sortList[i].content + "</p>";
                         $("#messageBody").append(messageSender);
                     } else {
-                        let messageRecepient = "<p class='receiver'>" + sortList[i].messageTimestamp + " " + sortList[i].content + "</p>";
+                        let messageRecepient = "<p class='receiver'>" + sliceTime(sortList[i].messageTimestamp) + " " + sortList[i].content + "</p>";
                         $("#messageBody").append(messageRecepient);
                     }
                 }
@@ -481,6 +479,11 @@
     function getCurrentTime () {
         let tzoffset = (new Date()).getTimezoneOffset() * 60000;
         return (new Date(Date.now() - tzoffset)).toISOString();
+    }
+
+    function sliceTime (datetime) {
+        let arrslice = datetime.split(":");
+        return arrslice[0].replace("T", " ")+":"+arrslice[1]+":"+arrslice[2].slice(0, 2);
     }
 </script>
 </body>
