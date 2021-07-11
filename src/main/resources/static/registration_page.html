@@ -33,7 +33,7 @@
             font-size: 14px;
         }
 
-        .form button {
+        .login-button {
             font-family: "Arial", sans-serif;
             outline: 0;
             background: #111111;
@@ -44,7 +44,40 @@
             font-size: 14px;
         }
 
-        .form button:hover {
+        .login-button:hover {
+            background: green;
+            color: white;
+            cursor: pointer
+        }
+
+        #login-button {
+            font-family: "Arial", sans-serif;
+            outline: 0;
+            background: #111111;
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: lawngreen;
+            font-size: 14px;
+        }
+
+        form:invalid {
+            border: 5px solid black;
+        }
+        input:valid {
+            background-color: mediumseagreen;
+        }
+
+        form:valid {
+            border: 5px solid #ddffdd;
+        }
+
+        input:required:invalid {
+            border-color: #800000;
+            border-width: 3px;
+        }
+
+        #login-button:hover {
             background: green;
             color: white;
             cursor: pointer
@@ -59,17 +92,20 @@
 
 <div class="login-page">
     <div class="form">
-        <h1 style="color: white">Authorization
+        <h1 style="color: white">Registration
             <b style="color: mediumseagreen">Schat</b></h1>
         <br>
-        <input type="text" id="firstName" placeholder="firstName"/>
-        <input type="text" id="lastName" placeholder="lastName"/>
-        <input type="text" id="secondName" placeholder="secondName"/>
-        <input type="date" id="birthDate" placeholder="birthDate"/>
-        <input type="text" id="login" placeholder="login"/>
-        <input type="password" id="password" placeholder="password"/>
-        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Create</button>
-        <a href="index.html.html" ><button id="registration" type="button" >Back</button></a>
+        <form  action="JavaScript:register()">
+        <input type="text" required="required" id="firstName" placeholder="firstName"/>
+        <input type="text" required id="lastName" placeholder="lastName"/>
+        <input type="text" required id="secondName" placeholder="secondName"/>
+        <input type="date" required id="birthDate" placeholder="birthDate"/>
+        <input type="text" required id="login" placeholder="login"/>
+        <input type="password" required id="password" placeholder="password"/>
+        <input id="login-button" type="submit" value="Create">
+        </form>
+<!--        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Create</button>-->
+        <a href="index.html.html" ><button class="login-button" type="button" >Back</button></a>
         <br>
     </div>
 </div>
