@@ -12,7 +12,7 @@ spring:
     change-log: classpath:liquibase/db.changelog.xml
     enabled: false
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 10.129.0.4:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
