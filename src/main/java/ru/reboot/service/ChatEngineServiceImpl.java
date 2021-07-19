@@ -223,7 +223,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             logger.info(">> Sent: {}", objectMapper.writeValueAsString(messageEvent));
         } catch (Exception e) {
             logger.error("Failed to .commitMessages messageIds={} error={}", messageIds.toString(), e.toString(), e);
-            throw new BusinessLogicException(e.getMessage(), ErrorCode.ILLEGAL_ARGUMENT);
+            throw new BusinessLogicException(e.getMessage(), ErrorCode.KAFKA_ERROR);
         }
     }
 
@@ -313,13 +313,13 @@ public class ChatEngineServiceImpl implements ChatEngineService {
             ObjectMapper objectMapper = new ObjectMapper();
             CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
             if (event.getMessageIds().isEmpty()) {
-                throw new BusinessLogicException("No messagesId", ErrorCode.ILLEGAL_ARGUMENT);
+                throw new BusinessLogicException("No messagesId", ErrorCode.KAFKA_ERROR);
             }
             messageRepository.updateWasReadByIds(event.getMessageIds());
             logger.info("<< Received: {}", raw);
         } catch (Exception e) {
             logger.error("Failed to .onCommitMessageEvent topic={} content={} error={}", CommitMessageEvent.TOPIC, raw, e.toString(), e);
-            throw new BusinessLogicException(e.getMessage(), ErrorCode.ILLEGAL_ARGUMENT);
+            throw new BusinessLogicException(e.getMessage(), ErrorCode.KAFKA_ERROR);
         }
     }
 
@@ -344,7 +344,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         UserInfo[] authDBUsers = restTemplate.getForObject(authServiceURL + "/auth/user/all", UserInfo[].class);
 
         if (authDBUsers == null) {
-            throw new BusinessLogicException("authDBUsers in .loadAllUsers gets null", ErrorCode.DATABASE_ERROR);
+            throw new BusinessLogicException("authDBUsers in .loadAllUsers gets null", ErrorCode.USER_NOT_FOUND);
         }
 
         for (UserInfo userInfo : authDBUsers) {
@@ -370,7 +370,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
                 logger.info("Method .createUser completed user={} return={}", user, userInfo);
                 return userInfo;
             }
-            throw new BusinessLogicException("New user in .createUser cannot be created", ErrorCode.DATABASE_ERROR);
+            throw new BusinessLogicException("New user in .createUser cannot be created", ErrorCode.USER_CREATE_ERROR);
         } catch (Exception e) {
             logger.error("Failed to .createUser user={} error={}.", user, e.toString(), e);
             throw e;

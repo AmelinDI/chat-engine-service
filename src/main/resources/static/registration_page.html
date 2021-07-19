@@ -104,7 +104,6 @@
         <input type="password" required id="password" placeholder="password"/>
         <input id="login-button" type="submit" value="Create">
         </form>
-<!--        <button onkeypress="register()" onclick="register()" id="login-button" type="submit">Create</button>-->
         <a href="index.html.html" ><button class="login-button" type="button" >Back</button></a>
         <br>
     </div>
@@ -112,13 +111,13 @@
 <script>
     function register() {
         let data = {}
-        data["userId"] = generateGUID();
-        data["firstName"] = $('#firstName').val()
-        data["lastName"] = $('#lastName').val();
-        data["secondName"] = $('#secondName').val();
-        data["birthDate"] = $('#birthDate').val();
-        data["login"] = $('#login').val();
-        data["password"] = $('#password').val()
+        // data["userId"] = generateGUID();
+        data["firstName"] = $('#firstName').val().trim();
+        data["lastName"] = $('#lastName').val().trim();
+        data["secondName"] = $('#secondName').val().trim();
+        data["birthDate"] = $('#birthDate').val().trim();
+        data["login"] = $('#login').val().trim();
+        data["password"] = $('#password').val().trim();
         $.ajax({
             type: "POST",
             contentType: "application/json",
@@ -131,7 +130,7 @@
                 window.location.href = 'index.html';
             },
             error: function (e) {
-                console.log("ERROR : ", e);
+                alert("The error has happened");
             }
     });}
 
