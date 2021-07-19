@@ -282,9 +282,9 @@
                                                 let createListString = document.createElement("li")
                                                 createListString.style.margin = '15px'
                                                 if (chatInfoList[key]!==undefined) {
-                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[key].unreadMessagesCount + "</span></div><br>"
+                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>" + val.firstName + " "+val.lastName+"</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[key].unreadMessagesCount + "</span></div><br>"
                                                 } else {
-                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
+                                                    createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + " "+val.lastName+ "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
                                                 }
                                                 $("#nobull").append(createListString);
                                             });
@@ -433,9 +433,9 @@
                         let createListString = document.createElement("li")
                         createListString.style.margin = '15px'
                         if (chatInfoList[koy]!==undefined) {
-                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[koy].unreadMessagesCount + "</span></div><br>"
+                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + " "+val.lastName+ "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>" + chatInfoList[koy].unreadMessagesCount + "</span></div><br>"
                         } else {
-                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
+                            createListString.innerHTML = "<div class='notification' onclick='clickOnCompanion(this)'><span class='companion-name'>"+ val.firstName + " "+val.lastName+ "</span><input class='comanionId' placeholder="+val.userId+" type='hidden'><span class='badge'>0</span></div><br>"
                         }
                         $("#nobull").append(createListString);
                     });
