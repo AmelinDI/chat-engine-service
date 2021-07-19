@@ -75,8 +75,8 @@
 <script>
   function login() {
     let data = {}
-    data["login"] = $('#login').val();
-    data["password"] = $('#password').val();
+    data["login"] = $('#login').val().trim();
+    data["password"] = $('#password').val().trim();
     $.ajax({
       type: "POST",
       contentType: "application/json",
