@@ -10,12 +10,14 @@ public class CustomUserDetails extends User {
     private final String userId;
     private final String login;
     private String firstName;
+    private String lastName;
 
 
-    public CustomUserDetails(String userId, String login, String firstName, String password, Collection<GrantedAuthority> authorities) {
+    public CustomUserDetails(String userId, String login, String firstName, String lastName, String password, Collection<GrantedAuthority> authorities) {
 
         super(login, password, authorities);
         this.firstName = firstName;
+        this.lastName = lastName;
         this.userId = userId;
         this.login = login;
     }
@@ -30,5 +32,9 @@ public class CustomUserDetails extends User {
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 }

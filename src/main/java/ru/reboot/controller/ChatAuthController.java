@@ -53,6 +53,7 @@ public class ChatAuthController {
                 .setUserID(user.getUserId())
                 .setLogin(user.getLogin())
                 .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
                 .build();
     }
 
