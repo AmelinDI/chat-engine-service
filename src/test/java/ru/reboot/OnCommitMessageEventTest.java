@@ -36,7 +36,7 @@ public class OnCommitMessageEventTest {
             Assert.fail();
         }
         catch (BusinessLogicException exp){
-            Assert.assertEquals(exp.getCode(), ErrorCode.ILLEGAL_ARGUMENT);
+            Assert.assertEquals(exp.getCode(), ErrorCode.KAFKA_ERROR);
         }
 
     }
