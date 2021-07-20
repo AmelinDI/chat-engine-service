@@ -80,7 +80,7 @@
     $.ajax({
       type: "POST",
       contentType: "application/json",
-      url: "http://localhost:7086/authentication/login",
+      url: "/authentication/login",
       data: JSON.stringify(data),
       dataType: 'json',
       cache: false,
@@ -90,6 +90,7 @@
       },
       error: function (e) {
         console.log("ERROR : ", e);
+        alert("Login or password is incorrect");
       }
     });}
 </script>

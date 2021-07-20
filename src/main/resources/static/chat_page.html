@@ -28,7 +28,7 @@
             display: inline-block;
             border-radius: 4px;
             cursor: pointer;
-            width: 150px;
+            width: 250px;
         }
 
         .notification:hover {
@@ -241,7 +241,7 @@
 
     function drawChats() {
         $.ajax({
-            url: "http://localhost:7086/authentication/info",
+            url: "/authentication/info",
             method: 'GET',
             dataType: 'json',
             success: function (result) {
@@ -250,7 +250,7 @@
                 currenUser["curentusername"] = result["firstName"];
                 $("#setnamehere").text(currenUser.curentusername);
                 $.ajax({
-                    url: "http://localhost:7086/chat/user/all",
+                    url: "/chat/user/all",
                     method: 'GET',
                     dataType: 'json',
                     success: function (result) {
@@ -260,14 +260,14 @@
                         }
 
                         $.ajax({
-                            url: "http://localhost:7086/chat/user/authorize",
+                            url: "/chat/user/authorize",
                             data: currenUser.curentuseruserId,
                             method: 'POST',
                             dataType: 'json',
                             contentType: "application/json",
                             success: function () {
                                 $.ajax({
-                                    url: "http://localhost:7086/chat/all?userId=" + currenUser.curentuseruserId,
+                                    url: "/chat/all?userId=" + currenUser.curentuseruserId,
                                     method: 'GET',
                                     dataType: 'json',
                                     success: function (result1) {
@@ -326,7 +326,7 @@
         data.readTime=null
 
         $.ajax({
-            url: "http://localhost:7086/chat/message",
+            url: "/chat/message",
             type: 'POST',
             data: JSON.stringify(data),
             dataType: 'json',
@@ -373,7 +373,7 @@
 
     function firstLoad(){
         $.ajax({
-            url: "http://localhost:7086/chat/message/all?sender=" + currentCompanionId + "&recipient=" + currenUser["curentuseruserId"],
+            url: "/chat/message/all?sender=" + currentCompanionId + "&recipient=" + currenUser["curentuseruserId"],
             method: 'GET',
             dataType: 'json',
             success: function (result) {
@@ -389,7 +389,7 @@
 
     function secondLoopLoad(){
         $.ajax({
-            url: "http://localhost:7086/chat/message/sinceTime?sender=" + currentCompanionId + "&recipient=" + currenUser["curentuseruserId"] + "&timestamp=" + lastAccessDateTime,
+            url: "/chat/message/sinceTime?sender=" + currentCompanionId + "&recipient=" + currenUser["curentuseruserId"] + "&timestamp=" + lastAccessDateTime,
             method: 'GET',
             dataType: 'json',
             success: function (result) {
@@ -403,7 +403,7 @@
 
     function logout(){
         $.ajax({
-            url: "http://localhost:7086/chat/user/logout",
+            url: "/chat/user/logout",
             contentType: "application/json",
             method: 'GET',
             dataType: 'json',
@@ -419,7 +419,7 @@
     function updateChatInfos()
     {
         $.ajax({
-            url: "http://localhost:7086/chat/all?userId=" + currenUser.curentuseruserId,
+            url: "/chat/all?userId=" + currenUser.curentuseruserId,
             method: 'GET',
             dataType: 'json',
             success: function (result1) {

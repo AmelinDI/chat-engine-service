@@ -111,7 +111,6 @@
 <script>
     function register() {
         let data = {}
-        // data["userId"] = generateGUID();
         data["firstName"] = $('#firstName').val().trim();
         data["lastName"] = $('#lastName').val().trim();
         data["secondName"] = $('#secondName').val().trim();
@@ -121,7 +120,7 @@
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "http://localhost:7086/chat/registration/user",
+            url: "/chat/registration/user",
             data: JSON.stringify(data),
             dataType: 'json',
             cache: false,
