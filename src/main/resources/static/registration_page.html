@@ -88,50 +88,76 @@
         }
     </style>
 </header>
-<body>
+<body onkeypress="register(event)">
 
 <div class="login-page">
     <div class="form">
         <h1 style="color: white">Registration
             <b style="color: mediumseagreen">Schat</b></h1>
         <br>
-        <form  action="JavaScript:register()">
         <input type="text" required="required" id="firstName" placeholder="firstName"/>
         <input type="text" required id="lastName" placeholder="lastName"/>
         <input type="text" required id="secondName" placeholder="secondName"/>
         <input type="date" required id="birthDate" placeholder="birthDate"/>
         <input type="text" required id="login" placeholder="login"/>
         <input type="password" required id="password" placeholder="password"/>
-        <input id="login-button" type="submit" value="Create">
-        </form>
-        <a href="index.html.html" ><button class="login-button" type="button" >Back</button></a>
+        <input id="login-button" type="submit" onkeypress="register(event)" onclick="register2()" value="Create">
+        <a href="index.html.html"><button class="login-button" type="button" >Back</button></a>
         <br>
     </div>
 </div>
 <script>
-    function register() {
-        let data = {}
-        data["firstName"] = $('#firstName').val().trim();
-        data["lastName"] = $('#lastName').val().trim();
-        data["secondName"] = $('#secondName').val().trim();
-        data["birthDate"] = $('#birthDate').val().trim();
-        data["login"] = $('#login').val().trim();
-        data["password"] = $('#password').val().trim();
-        $.ajax({
-            type: "POST",
-            contentType: "application/json",
-            url: "/chat/registration/user",
-            data: JSON.stringify(data),
-            dataType: 'json',
-            cache: false,
-            success: function(data){
-                console.log(data)
-                window.location.href = 'index.html';
-            },
-            error: function (e) {
-                alert("The error has happened");
-            }
-    });}
+    function register(event) {
+        if (event.keyCode == 13) {
+            let data = {}
+            data["firstName"] = $('#firstName').val().trim();
+            data["lastName"] = $('#lastName').val().trim();
+            data["secondName"] = $('#secondName').val().trim();
+            data["birthDate"] = $('#birthDate').val().trim();
+            data["login"] = $('#login').val().trim();
+            data["password"] = $('#password').val().trim();
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/chat/registration/user",
+                data: JSON.stringify(data),
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    console.log(data)
+                    window.location.href = 'index.html';
+                },
+                error: function (e) {
+                    alert("The error has happened");
+                }
+            });
+        }
+    }
+
+    function register2() {
+            let data = {}
+            data["firstName"] = $('#firstName').val().trim();
+            data["lastName"] = $('#lastName').val().trim();
+            data["secondName"] = $('#secondName').val().trim();
+            data["birthDate"] = $('#birthDate').val().trim();
+            data["login"] = $('#login').val().trim();
+            data["password"] = $('#password').val().trim();
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/chat/registration/user",
+                data: JSON.stringify(data),
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    console.log(data)
+                    window.location.href = 'index.html';
+                },
+                error: function (e) {
+                    alert("The error has happened");
+                }
+            });
+        }
 
     function generateGUID(){
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

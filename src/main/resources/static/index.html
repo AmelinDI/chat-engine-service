@@ -55,8 +55,7 @@
     }
   </style>
 </header>
-<body>
-
+<body onkeypress="login(event)">
 <div class="login-page">
   <div class="form">
     <h1 style="color: white">Authorization
@@ -64,35 +63,60 @@
     <br>
     <input type="text" id="login" placeholder="login"/>
     <input type="password" id="password" placeholder="password"/>
-    <button onkeypress="login()" onclick="login()" id="login-button" type="submit">Login</button>
+    <button onclick="login2()" id="login-button" type="submit">Login</button>
     <br>
     <br>
-    <a href="registration_page.html" ><button id="registration" type="button" >Registration</button></a>
+    <a href="registration_page.html"><button id="registration" type="button" >Registration</button></a>
     </br>
 
   </div>
 </div>
 <script>
-  function login() {
-    let data = {}
-    data["login"] = $('#login').val().trim();
-    data["password"] = $('#password').val().trim();
-    $.ajax({
-      type: "POST",
-      contentType: "application/json",
-      url: "/authentication/login",
-      data: JSON.stringify(data),
-      dataType: 'json',
-      cache: false,
-      success: function(data){
-        console.log(data)
-        window.location.href = 'chat_page.html';
-      },
-      error: function (e) {
-        console.log("ERROR : ", e);
-        alert("Login or password is incorrect");
-      }
-    });}
+  function login(event) {
+    if (event.keyCode == 13) {
+      let data = {}
+      data["login"] = $('#login').val().trim();
+      data["password"] = $('#password').val().trim();
+      $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "/authentication/login",
+        data: JSON.stringify(data),
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+          console.log(data)
+          window.location.href = 'chat_page.html';
+        },
+        error: function (e) {
+          console.log("ERROR : ", e);
+          alert("Login or password is incorrect");
+        }
+      });
+    }
+  }
+  function login2() {
+      let data = {}
+      data["login"] = $('#login').val().trim();
+      data["password"] = $('#password').val().trim();
+      $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "/authentication/login",
+        data: JSON.stringify(data),
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+          console.log(data)
+          window.location.href = 'chat_page.html';
+        },
+        error: function (e) {
+          console.log("ERROR : ", e);
+          alert("Login or password is incorrect");
+        }
+      });
+    }
+
 </script>
 </body>
 </html>
