@@ -2,11 +2,13 @@ package ru.reboot.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.reboot.dto.UserInfo;
 import ru.reboot.error.BusinessLogicException;
@@ -15,13 +17,11 @@ import ru.reboot.error.ErrorCode;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Service
 public class CustomUserDetailedService implements UserDetailsService {
 
-    private final String authServiceURL;
-
-    public CustomUserDetailedService(String authServiceURL) {
-        this.authServiceURL = authServiceURL;
-    }
+    @Value("${client.auth-service}")
+    private String authServiceURL;
 
     private static final Logger logger = LogManager.getLogger(CustomUserDetailedService.class);
 

@@ -93,7 +93,7 @@ public class MessageInfo {
     }
 
     public static class Builder {
-        private MessageInfo obj;
+        private final MessageInfo obj;
 
         public Builder() {
             obj = new MessageInfo();
