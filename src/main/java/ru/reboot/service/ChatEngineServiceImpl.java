@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.reboot.dao.MessageRepository;
@@ -36,12 +37,18 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     private KafkaTemplate<String, String> kafkaTemplate;
     private UserCache userCache;
     private MessageRepository messageRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Value("${client.auth-service}")
     private String authServiceURL;
 
     @Value("${client.message-storage-service}")
     private String messageStorageServiceURL;
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Autowired
     public void setUserCache(UserCache userCache) {
@@ -309,7 +316,7 @@ public class ChatEngineServiceImpl implements ChatEngineService {
     @KafkaListener(topics = CommitMessageEvent.TOPIC, groupId = "chat-engine-service", autoStartup = "${kafka.autoStartup}")
     public void onCommitMessageEvent(String raw) {
         logger.info("Method.onCommitMessageEvent topic={} content={}", CommitMessageEvent.TOPIC, raw);
-        try{
+        try {
             ObjectMapper objectMapper = new ObjectMapper();
             CommitMessageEvent event = objectMapper.readValue(raw, CommitMessageEvent.class);
             if (event.getMessageIds().isEmpty()) {
@@ -352,19 +359,23 @@ public class ChatEngineServiceImpl implements ChatEngineService {
         }
     }
 
-    /** Create new User with RestTemplate by POST "/auth/user" from  auth-service
+    /**
+     * Create new User with RestTemplate by POST "/auth/user" from  auth-service
      *
      * @param user - UserInfo instance of user to create in DB
      * @return Returns UserInfo instance
      */
     @Override
-    public UserInfo createUser(UserInfo user){
+    public UserInfo createUser(UserInfo user) {
         logger.info("Method .createUser user={}", user);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         try {
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<UserInfo> responseEntity = restTemplate.postForEntity(authServiceURL + "/auth/user",user,UserInfo.class);
+            ResponseEntity<UserInfo> responseEntity = restTemplate.postForEntity(authServiceURL + "/auth/user", user, UserInfo.class);
 
-            if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
+            if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
                 UserInfo userInfo = responseEntity.getBody();
                 userCache.addUser(userInfo);
                 logger.info("Method .createUser completed user={} return={}", user, userInfo);

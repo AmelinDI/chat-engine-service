@@ -113,8 +113,8 @@ public class MessageEntity {
                 '}';
     }
 
-    public static class  Builder {
-        private MessageEntity obj;
+    public static class Builder {
+        private final MessageEntity obj;
 
         public Builder() {
             obj = new MessageEntity();

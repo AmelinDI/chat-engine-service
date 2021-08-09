@@ -88,20 +88,20 @@ public class UserInfo {
     @Override
     public String toString() {
         return "User{" +
-                "user_id='" + userId + '\'' +
+                "user_id='" + ((userId == null) ? "null" : userId) + '\'' +
                 ", first_name='" + firstName + '\'' +
                 ", last_name='" + lastName + '\'' +
                 ", second_name='" + secondName + '\'' +
                 ", birth_date=" + birthDate +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
-                ", roles='" + String.join(",", roles) + '\'' +
+                ", roles='" + ((roles == null) ? "null" : roles) + '\'' +
                 '}';
     }
 
     public static class Builder {
 
-        private UserInfo obj = new UserInfo();
+        private final UserInfo obj = new UserInfo();
 
         public Builder setUserID(String userId) {
             obj.userId = userId;

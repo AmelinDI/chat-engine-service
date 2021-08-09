@@ -9,8 +9,8 @@ public class CustomUserDetails extends User {
 
     private final String userId;
     private final String login;
-    private String firstName;
-    private String lastName;
+    private final String firstName;
+    private final String lastName;
 
 
     public CustomUserDetails(String userId, String login, String firstName, String lastName, String password, Collection<GrantedAuthority> authorities) {

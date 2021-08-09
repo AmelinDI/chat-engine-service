@@ -1,7 +1,5 @@
 package ru.reboot.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.reboot.dto.ChatInfo;
 import ru.reboot.dto.MessageInfo;
 import ru.reboot.dto.UserInfo;
@@ -29,8 +27,8 @@ public interface ChatEngineController {
     /**
      * Get messages form specific time up to current/
      *
-     * @param sender       - sender user id
-     * @param recipient    - recipient user id
+     * @param sender    - sender user id
+     * @param recipient - recipient user id
      */
     List<MessageInfo> getMessages(String sender, String recipient);
 
